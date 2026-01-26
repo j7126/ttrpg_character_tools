@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
-import 'package:ttrpg_character_tools/data_views/5e/items_view.dart';
-import 'package:ttrpg_character_tools/datamodel/5e/data_loader.dart';
+import 'package:render_ttrpg_data/data_views/5e/items_view.dart';
+import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
 
 class ItemsPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _ClassesPageState extends State<ItemsPage> {
       title: "Items",
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
-          : const ItemsView(),
+          : ItemsView(items: DataLoader.items),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/data_views/5e/class_view.dart';
-import 'package:ttrpg_character_tools/datamodel/5e/data/class/class.dart';
+import 'package:render_ttrpg_data/data_views/5e/class_view.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 
 class ClassPage extends StatelessWidget {
   const ClassPage({

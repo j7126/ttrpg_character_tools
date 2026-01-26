@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:ttrpg_character_tools/datamodel/5e/data/class/class.dart';
-import 'package:ttrpg_character_tools/datamodel/5e/data/class/class_feature.dart';
-import 'package:ttrpg_character_tools/datamodel/5e/data/condition/condition.dart';
-import 'package:ttrpg_character_tools/datamodel/5e/data/item/item.dart';
-import 'package:ttrpg_character_tools/datamodel/data_load_error.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/condition/condition.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/item/item.dart';
+import 'package:ttrpg_character_tools/data_load_error.dart';
 
 class DataLoader {
   static bool ready = false;
@@ -36,7 +36,14 @@ class DataLoader {
       var items = json["baseitem"] as List<dynamic>;
       DataLoader.items.addAll(items.map((x) => Item.fromJson(x)));
     } catch (e) {
-      errors.add(DataLoadError(itemType: 'item', itemName: 'items-base', filePath: path, error: e.toString()));
+      errors.add(
+        DataLoadError(
+          itemType: 'item',
+          itemName: 'items-base',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
     }
 
     path = 'items.json';
@@ -45,15 +52,18 @@ class DataLoader {
       var items = json["item"] as List<dynamic>;
       DataLoader.items.addAll(
         items
-            .where(
-              (x) => x is Map<String, dynamic> && !x.containsKey("_copy"),
-            )
-            .map(
-              (x) => Item.fromJson(x),
-            ),
+            .where((x) => x is Map<String, dynamic> && !x.containsKey("_copy"))
+            .map((x) => Item.fromJson(x)),
       );
     } catch (e) {
-      errors.add(DataLoadError(itemType: 'item', itemName: 'items', filePath: path, error: e.toString()));
+      errors.add(
+        DataLoadError(
+          itemType: 'item',
+          itemName: 'items',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
@@ -62,9 +72,18 @@ class DataLoader {
     try {
       var json = await loadJson(path);
       var conditions = json["condition"] as List<dynamic>;
-      DataLoader.conditions.addAll(conditions.map((x) => Condition.fromJson(x)));
+      DataLoader.conditions.addAll(
+        conditions.map((x) => Condition.fromJson(x)),
+      );
     } catch (e) {
-      errors.add(DataLoadError(itemType: 'condition', itemName: 'conditionsdiseases', filePath: path, error: e.toString()));
+      errors.add(
+        DataLoadError(
+          itemType: 'condition',
+          itemName: 'conditionsdiseases',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
@@ -74,14 +93,26 @@ class DataLoader {
     for (var kvp in index.entries) {
       var filename = kvp.value;
       if (filename is! String) {
-        errors.add(DataLoadError(
-            itemType: 'class', itemName: kvp.key, filePath: indexPath, error: "File name was not a string"));
+        errors.add(
+          DataLoadError(
+            itemType: 'class',
+            itemName: kvp.key,
+            filePath: indexPath,
+            error: "File name was not a string",
+          ),
+        );
         continue;
       }
       var path = 'class/$filename';
       if (!RegExp(r'^[a-zA-Z-]*\.json$').hasMatch(filename)) {
-        errors
-            .add(DataLoadError(itemType: 'class', itemName: kvp.key, filePath: path, error: "File name was not valid"));
+        errors.add(
+          DataLoadError(
+            itemType: 'class',
+            itemName: kvp.key,
+            filePath: path,
+            error: "File name was not valid",
+          ),
+        );
         continue;
       }
       try {
@@ -89,9 +120,18 @@ class DataLoader {
         var features = json["classFeature"] as List<dynamic>;
         classFeatures.addAll(features.map((x) => ClassFeature5e.fromJson(x)));
         var classesJson = json["class"] as List<dynamic>;
-        classes.addAll(classesJson.map((x) => Class5e.fromJson(x)));
+        classes.addAll(
+          classesJson.map((x) => Class5e.fromJson(x, classFeatures)),
+        );
       } catch (e) {
-        errors.add(DataLoadError(itemType: 'class', itemName: kvp.key, filePath: path, error: e.toString()));
+        errors.add(
+          DataLoadError(
+            itemType: 'class',
+            itemName: kvp.key,
+            filePath: path,
+            error: e.toString(),
+          ),
+        );
       }
     }
   }
@@ -104,7 +144,7 @@ class DataLoader {
   static void _hydrateReferences() {
     for (var feat in classFeatures) {
       for (var entry in feat.entries) {
-        entry.hydrateFeatureReference();
+        entry.hydrateFeatureReference(classFeatures);
       }
     }
   }
