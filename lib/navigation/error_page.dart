@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/service/static_service.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage({super.key});
@@ -8,7 +7,7 @@ class ErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Service.appName),
+        title: const Text("Character Manager"),
       ),
       body: const Center(
         child: Text('An unknown error has occurred.'),

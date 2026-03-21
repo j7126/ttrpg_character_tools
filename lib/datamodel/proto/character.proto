@@ -1,0 +1,14 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+import "options.proto";
+import "google/protobuf/timestamp.proto";
+
+message Character {
+  string id = 1;
+  string name = 2;
+  int32 life = 3;
+  int32 maxLife = 4;
+  google.protobuf.Timestamp createdTimestamp = 5;
+  Options options = 6;
+}

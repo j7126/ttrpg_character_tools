@@ -1,0 +1,6 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message Options {
+  bool disableColorCodeLife = 1;
+}

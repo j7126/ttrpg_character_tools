@@ -9,11 +9,13 @@ class PageScaffold extends StatefulWidget {
     required this.adaptiveInfo,
     required this.body,
     required this.title,
+    this.appBarActions,
   });
 
   final AdaptiveInfo adaptiveInfo;
   final Widget body;
   final String title;
+  final List<Widget>? appBarActions;
 
   @override
   State<PageScaffold> createState() => _PageScaffoldState();
@@ -28,8 +30,10 @@ class _PageScaffoldState extends State<PageScaffold> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Classes"),
-          automaticallyImplyLeading: widget.adaptiveInfo.isLandscape && !widget.adaptiveInfo.isLarge,
-          leading: widget.adaptiveInfo.isLandscape && widget.adaptiveInfo.isLarge
+          automaticallyImplyLeading:
+              widget.adaptiveInfo.isLandscape && !widget.adaptiveInfo.isLarge,
+          leading:
+              widget.adaptiveInfo.isLandscape && widget.adaptiveInfo.isLarge
               ? IconButton(
                   onPressed: () => setState(() {
                     extended = !extended;
@@ -39,9 +43,12 @@ class _PageScaffoldState extends State<PageScaffold> {
                   padding: const EdgeInsets.all(16),
                 )
               : null,
+          actions: widget.appBarActions,
         ),
         bottomNavigationBar: NavBar.fromAdaptiveInfo(widget.adaptiveInfo),
-        drawer: widget.adaptiveInfo.isLandscape && !widget.adaptiveInfo.isLarge ? const NavMenu() : null,
+        drawer: widget.adaptiveInfo.isLandscape && !widget.adaptiveInfo.isLarge
+            ? const NavMenu()
+            : null,
         body: Row(
           children: [
             if (widget.adaptiveInfo.isLandscape && widget.adaptiveInfo.isLarge)
@@ -59,9 +66,7 @@ class _PageScaffoldState extends State<PageScaffold> {
                 child: const OverflowBox(
                   maxWidth: 300,
                   alignment: Alignment.centerLeft,
-                  child: NavMenu(
-                    showAppTitle: false,
-                  ),
+                  child: NavMenu(showAppTitle: false),
                 ),
               ),
             Expanded(

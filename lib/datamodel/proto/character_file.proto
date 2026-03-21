@@ -1,0 +1,7 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message CharacterFile {
+  string path = 1;
+  string macosBookmark = 2;
+}

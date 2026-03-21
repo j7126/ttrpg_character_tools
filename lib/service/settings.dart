@@ -3,13 +3,14 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsService {
-  late SharedPreferences prefs;
+  static late SettingsService instance;
 
-  static Future<SettingsService> build() async {
-    SettingsService service = SettingsService();
-    await service._setup();
-    return service;
+  static Future build() async {
+    instance = SettingsService();
+    await instance._setup();
   }
+
+  late SharedPreferences prefs;
 
   Future _setup() async {
     prefs = await SharedPreferences.getInstance();
@@ -17,16 +18,16 @@ class SettingsService {
   }
 
   void _readData() {
-    var enablePlanechase = prefs.getBool('enablePlanechase');
-    if (enablePlanechase != null) {
-      _pref_enablePlanechase = enablePlanechase;
+    var recentFiles = prefs.getStringList('recentFiles');
+    if (recentFiles != null) {
+      _conf_recentFiles = recentFiles;
     }
   }
 
-  bool _pref_enablePlanechase = false;
-  bool get pref_enablePlanechase => _pref_enablePlanechase;
-  set pref_enablePlanechase(bool val) {
-    _pref_enablePlanechase = val;
-    prefs.setBool('enablePlanechase', val);
+  List<String> _conf_recentFiles = [];
+  List<String> get conf_recentFiles => _conf_recentFiles;
+  set conf_recentFiles(List<String> val) {
+    _conf_recentFiles = val;
+    prefs.setStringList('recentFiles', val);
   }
 }
