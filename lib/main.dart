@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
+import 'package:ttrpg_character_tools/character/character_ui/character_page.dart';
 import 'package:ttrpg_character_tools/navigation/error_page.dart';
-import 'package:ttrpg_character_tools/pages/characters_page.dart';
+import 'package:ttrpg_character_tools/character/characters_page.dart';
 import 'package:ttrpg_character_tools/pages/classes_page.dart';
 import 'package:ttrpg_character_tools/pages/conditions_page.dart';
 import 'package:ttrpg_character_tools/pages/items_page.dart';
@@ -67,6 +68,11 @@ class _AppState extends State<App> {
               case "/characters":
                 return PageRouteBuilder(
                   pageBuilder: (_, _, _) => const CharactersPage(),
+                  settings: settings,
+                );
+              case "/character":
+                return PageRouteBuilder(
+                  pageBuilder: (_, _, _) => const CharacterPage(),
                   settings: settings,
                 );
               case "/classes":

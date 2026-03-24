@@ -1,0 +1,22 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message CharacterStats {
+  map<int32, int32> base = 1;
+  map<int32, int32> current = 2;
+}
+
+enum StatsType {
+  Strength = 0;
+  Dexterity = 1;
+  Constitution = 2;
+  Intelligence = 3;
+  Wisdom = 4;
+  Charisma = 5;
+}
+
+enum StatsMethod {
+  StatsStandardArray = 0;
+  StatsPointBuy = 1;
+  StatsRolled = 2;
+}

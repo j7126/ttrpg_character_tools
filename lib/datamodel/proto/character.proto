@@ -2,13 +2,24 @@ syntax = "proto3";
 package ttrpg_character_tools;
 
 import "options.proto";
+import "character_stats.proto";
+import "character_skills.proto";
+import "character_life.proto";
+import "character_alignment.proto";
 import "google/protobuf/timestamp.proto";
 
 message Character {
   string id = 1;
   string name = 2;
-  int32 life = 3;
-  int32 maxLife = 4;
   google.protobuf.Timestamp createdTimestamp = 5;
   Options options = 6;
+  map<string, int32> classAndLevel = 7;
+  string background = 8;
+  string race = 9;
+  string subRace = 10;
+  optional int32 xp = 11;
+  CharacterAlignment alignment = 12;
+  CharacterLife life = 13;
+  CharacterStats stats = 14;
+  CharacterSkills skills = 15;
 }

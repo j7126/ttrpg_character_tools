@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/timestamp_extension.dart';
 import 'package:ttrpg_character_tools/character/file_format.dart';
 import 'package:file_picker/file_picker.dart';
@@ -75,6 +76,7 @@ class CharacterManager {
     character = Character(
       id: Uuid().v4(),
       createdTimestamp: TimestampExtension.now(),
+      name: basenameWithoutExtension(filePath),
     );
     var buffer = character!.writeToBuffer();
     var bufferHash = xxh3(buffer);
@@ -151,6 +153,7 @@ class CharacterManager {
       await windowManager.setTitle(
         "Character Manager: ${basenameWithoutExtension(file!.path)}",
       );
+      character?.validate();
     }
   }
 }

@@ -9,12 +9,14 @@ class PageScaffold extends StatefulWidget {
     required this.adaptiveInfo,
     required this.body,
     required this.title,
+    this.titleWidget,
     this.appBarActions,
   });
 
   final AdaptiveInfo adaptiveInfo;
   final Widget body;
   final String title;
+  final Widget? titleWidget;
   final List<Widget>? appBarActions;
 
   @override
@@ -29,7 +31,7 @@ class _PageScaffoldState extends State<PageScaffold> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Classes"),
+          title: widget.titleWidget ?? Text(widget.title),
           automaticallyImplyLeading:
               widget.adaptiveInfo.isLandscape && !widget.adaptiveInfo.isLarge,
           leading:
@@ -43,6 +45,7 @@ class _PageScaffoldState extends State<PageScaffold> {
                   padding: const EdgeInsets.all(16),
                 )
               : null,
+          centerTitle: true,
           actions: widget.appBarActions,
         ),
         bottomNavigationBar: NavBar.fromAdaptiveInfo(widget.adaptiveInfo),

@@ -34,9 +34,10 @@ class NavMenu extends StatelessWidget {
           const Gap(16.0),
         for (var entry in NavEntry.entries)
           NavigationDrawerDestination(
-            label: Text(entry.label),
+            label: Text(entry.labelOverride?.call() ?? entry.label),
             icon: Icon(entry.icon),
             selectedIcon: Icon(entry.selectedIcon),
+            enabled: entry.shouldShow?.call() ?? true,
           ),
       ],
     );

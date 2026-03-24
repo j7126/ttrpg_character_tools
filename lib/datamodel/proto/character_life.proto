@@ -1,0 +1,20 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+import "dice.proto";
+
+message CharacterLife {
+  int32 hitPoints = 1;
+  int32 temporaryHitPoints = 2;
+  MaxHitPoints maxHitPoints = 3;
+  optional int32 maxHitPointsQty = 4;
+  repeated Dice hitDice = 5;
+  int32 deathSaveSuccess = 6;
+  int32 deathSaveFailure = 7;
+}
+
+enum MaxHitPoints {
+    HpAverage = 0;
+    HpRolled = 1;
+    HpCustom = 2;
+}

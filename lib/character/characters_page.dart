@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_file.pb.dart';
@@ -76,7 +76,7 @@ class _CharactersPageState extends State<CharactersPage> {
       _checkCharacterFiles();
       if (mounted) {
         showDialog<void>(
-          context: this.context,
+          context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('Failed to open file'),
@@ -109,10 +109,7 @@ class _CharactersPageState extends State<CharactersPage> {
     if (!mounted) {
       return;
     }
-    // TODO: open character page
-    /*await Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (ctx) => CharacterPage()));*/
+    await Navigator.of(context).pushReplacementNamed("/character");
     if (!mounted) {
       return;
     }
@@ -180,7 +177,7 @@ class _CharactersPageState extends State<CharactersPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          basenameWithoutExtension(file.path),
+                                          p.basenameWithoutExtension(file.path),
                                           style: TextTheme.of(
                                             context,
                                           ).titleLarge,

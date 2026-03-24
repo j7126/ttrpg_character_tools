@@ -1,0 +1,19 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message CharacterAlignment {
+  AlignmentA a = 1;
+  AlignmentB b = 2;
+}
+
+enum AlignmentA {
+    Lawful = 0;
+    NeutralA = 1;
+    Chaotic = 2;
+}
+
+enum AlignmentB {
+    Good = 0;
+    NeutralB = 1;
+    Evil = 2;
+}
