@@ -1,3 +1,4 @@
+import 'package:ttrpg_character_tools/datamodel/extension/character_skills_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_alignment.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_life.pb.dart';
@@ -22,5 +23,9 @@ extension CharacterExtension on Character {
     if (!hasSkills()) {
       skills = CharacterSkills();
     }
+  }
+
+  int getSkillModifier(CharacterSkill skill) {
+    return skills.getModifier(skill, stats);
   }
 }

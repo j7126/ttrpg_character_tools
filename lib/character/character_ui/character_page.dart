@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
-import 'package:ttrpg_character_tools/character/character_ui/character_life_section.dart';
-import 'package:ttrpg_character_tools/character/character_ui/character_stats_section.dart';
-import 'package:ttrpg_character_tools/character/character_ui/int_field_base.dart';
-import 'package:ttrpg_character_tools/character/character_ui/text_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
+import 'package:ttrpg_character_tools/character/character_ui/features_and_traits_section/class_features.dart';
+import 'package:ttrpg_character_tools/character/character_ui/life_section/character_life.dart';
+import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_proficiency_field.dart';
+import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_skills.dart';
+import 'package:ttrpg_character_tools/character/character_ui/stats_section/character_stats.dart';
+import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
 
 class CharacterPage extends StatefulWidget {
@@ -20,6 +23,25 @@ class _CharacterPageState extends State<CharacterPage> {
     setState(() {
       CharacterManager.instance.saveCharacter();
     });
+  }
+
+  void _dataLoaderReadyListener() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    DataLoader.loadData();
+    DataLoader.readyNotifier.addListener(_dataLoaderReadyListener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    DataLoader.readyNotifier.removeListener(_dataLoaderReadyListener);
+    super.dispose();
   }
 
   @override
@@ -59,57 +81,41 @@ class _CharacterPageState extends State<CharacterPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFieldBase(
-                        label: "Name",
-                        value: character.name,
-                        valueChanged: (val) {
-                          character.name = val;
-                          changed();
-                        },
-                      ),
-                    ),
-                    Gap(8.0),
-                    Expanded(
-                      child: TextFieldBase(
-                        label: "Background",
-                        value: character.background,
-                        valueChanged: (val) {
-                          character.background = val;
-                          changed();
-                        },
-                      ),
-                    ),
-                    Gap(8.0),
-                    Expanded(
-                      child: IntFieldBase(
-                        label: "Experience Points",
-                        value: character.xp,
-                        valueChanged: (val) {
-                          character.xp = val;
-                          changed();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // character info
+              CharacterInfoWidget(character: character, changed: changed),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // character stats
+                  CharacterStatsWidget(character: character, changed: changed),
+                  // character skills section
                   Container(
-                    constraints: BoxConstraints(maxWidth: 200.0),
-                    child: CharacterStatsSection(
+                    constraints: BoxConstraints(maxWidth: 280.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // profficency bonus
+                        CharacterProficiencyField(
+                          character: character,
+                          changed: changed,
+                        ),
+                        // skills
+                        CharacterSkillsWidget(
+                          character: character,
+                          changed: changed,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // life section
+                  Expanded(
+                    child: CharacterLifeWidget(
                       character: character,
                       changed: changed,
                     ),
                   ),
                   Expanded(
-                    child: CharacterLifeSection(
+                    child: ClassFeatures(
                       character: character,
                       changed: changed,
                     ),

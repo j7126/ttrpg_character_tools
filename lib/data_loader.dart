@@ -9,7 +9,9 @@ import 'package:render_ttrpg_data/datamodel/5e/data/item/item.dart';
 import 'package:ttrpg_character_tools/data_load_error.dart';
 
 class DataLoader {
-  static bool ready = false;
+  static final ValueNotifier<bool> readyNotifier = ValueNotifier<bool>(false);
+  static bool get ready => readyNotifier.value;
+  static bool isLoading = false;
   static List<Class5e> classes = [];
   static List<ClassFeature5e> classFeatures = [];
   static List<Item> items = [];
@@ -17,16 +19,18 @@ class DataLoader {
 
   static List<DataLoadError> errors = [];
 
-  static Future loadData() async {
-    if (ready) {
+  static void loadData() async {
+    if (ready || isLoading) {
       return;
     }
+
+    isLoading = true;
 
     await loadClasses();
     await loadItems();
     await loadConditions();
     _hydrateReferences();
-    ready = true;
+    readyNotifier.value = true;
   }
 
   static Future loadItems() async {

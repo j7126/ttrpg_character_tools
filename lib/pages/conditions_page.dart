@@ -12,16 +12,14 @@ class ConditionsPage extends StatefulWidget {
 }
 
 class _ConditionsPageState extends State<ConditionsPage> {
-  void load() async {
-    await DataLoader.loadData();
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   @override
   void initState() {
-    load();
+    DataLoader.loadData();
+    DataLoader.readyNotifier.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
     super.initState();
   }
 

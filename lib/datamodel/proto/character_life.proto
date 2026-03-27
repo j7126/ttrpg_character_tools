@@ -11,6 +11,7 @@ message CharacterLife {
   repeated Dice hitDice = 5;
   int32 deathSaveSuccess = 6;
   int32 deathSaveFailure = 7;
+  repeated Dice currentHitDice = 8;
 }
 
 enum MaxHitPoints {

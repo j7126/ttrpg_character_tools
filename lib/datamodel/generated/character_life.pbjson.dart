@@ -69,6 +69,14 @@ const CharacterLife$json = {
     },
     {'1': 'deathSaveSuccess', '3': 6, '4': 1, '5': 5, '10': 'deathSaveSuccess'},
     {'1': 'deathSaveFailure', '3': 7, '4': 1, '5': 5, '10': 'deathSaveFailure'},
+    {
+      '1': 'currentHitDice',
+      '3': 8,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.Dice',
+      '10': 'currentHitDice'
+    },
   ],
   '8': [
     {'1': '_maxHitPointsQty'},
@@ -83,4 +91,6 @@ final $typed_data.Uint8List characterLifeDescriptor = $convert.base64Decode(
     'ItCg9tYXhIaXRQb2ludHNRdHkYBCABKAVIAFIPbWF4SGl0UG9pbnRzUXR5iAEBEjUKB2hpdERp'
     'Y2UYBSADKAsyGy50dHJwZ19jaGFyYWN0ZXJfdG9vbHMuRGljZVIHaGl0RGljZRIqChBkZWF0aF'
     'NhdmVTdWNjZXNzGAYgASgFUhBkZWF0aFNhdmVTdWNjZXNzEioKEGRlYXRoU2F2ZUZhaWx1cmUY'
-    'ByABKAVSEGRlYXRoU2F2ZUZhaWx1cmVCEgoQX21heEhpdFBvaW50c1F0eQ==');
+    'ByABKAVSEGRlYXRoU2F2ZUZhaWx1cmUSQwoOY3VycmVudEhpdERpY2UYCCADKAsyGy50dHJwZ1'
+    '9jaGFyYWN0ZXJfdG9vbHMuRGljZVIOY3VycmVudEhpdERpY2VCEgoQX21heEhpdFBvaW50c1F0'
+    'eQ==');

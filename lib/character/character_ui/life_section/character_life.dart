@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/character/character_ui/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/life_section/character_death_saves.dart';
+import 'package:ttrpg_character_tools/character/character_ui/life_section/character_hit_dice_field.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
-class CharacterLifeSection extends StatelessWidget {
-  const CharacterLifeSection({
+class CharacterLifeWidget extends StatelessWidget {
+  const CharacterLifeWidget({
     super.key,
     required this.character,
     required this.changed,
@@ -49,6 +51,23 @@ class CharacterLifeSection extends StatelessWidget {
               changed();
             },
           ),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: CharacterHitDiceField(
+                character: character,
+                changed: changed,
+              ),
+            ),
+            Expanded(
+              child: CharacterDeathSaves(
+                character: character,
+                changed: changed,
+              ),
+            ),
+          ],
         ),
       ],
     );

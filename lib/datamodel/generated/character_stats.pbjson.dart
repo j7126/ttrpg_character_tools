@@ -68,6 +68,15 @@ const CharacterStats$json = {
       '6': '.ttrpg_character_tools.CharacterStats.CurrentEntry',
       '10': 'current'
     },
+    {'1': 'profficencyBonus', '3': 3, '4': 1, '5': 5, '10': 'profficencyBonus'},
+    {
+      '1': 'method',
+      '3': 4,
+      '4': 1,
+      '5': 14,
+      '6': '.ttrpg_character_tools.StatsMethod',
+      '10': 'method'
+    },
   ],
   '3': [CharacterStats_BaseEntry$json, CharacterStats_CurrentEntry$json],
 };
@@ -96,7 +105,8 @@ const CharacterStats_CurrentEntry$json = {
 final $typed_data.Uint8List characterStatsDescriptor = $convert.base64Decode(
     'Cg5DaGFyYWN0ZXJTdGF0cxJDCgRiYXNlGAEgAygLMi8udHRycGdfY2hhcmFjdGVyX3Rvb2xzLk'
     'NoYXJhY3RlclN0YXRzLkJhc2VFbnRyeVIEYmFzZRJMCgdjdXJyZW50GAIgAygLMjIudHRycGdf'
-    'Y2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclN0YXRzLkN1cnJlbnRFbnRyeVIHY3VycmVudBo3Cg'
-    'lCYXNlRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAVSBXZhbHVlOgI4ARo6'
-    'CgxDdXJyZW50RW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAVSBXZhbHVlOg'
-    'I4AQ==');
+    'Y2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclN0YXRzLkN1cnJlbnRFbnRyeVIHY3VycmVudBIqCh'
+    'Bwcm9mZmljZW5jeUJvbnVzGAMgASgFUhBwcm9mZmljZW5jeUJvbnVzEjoKBm1ldGhvZBgEIAEo'
+    'DjIiLnR0cnBnX2NoYXJhY3Rlcl90b29scy5TdGF0c01ldGhvZFIGbWV0aG9kGjcKCUJhc2VFbn'
+    'RyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGjoKDEN1cnJl'
+    'bnRFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgB');

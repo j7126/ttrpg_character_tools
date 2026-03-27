@@ -30,6 +30,7 @@ class CharacterLife extends $pb.GeneratedMessage {
     $core.Iterable<$0.Dice>? hitDice,
     $core.int? deathSaveSuccess,
     $core.int? deathSaveFailure,
+    $core.Iterable<$0.Dice>? currentHitDice,
   }) {
     final result = create();
     if (hitPoints != null) result.hitPoints = hitPoints;
@@ -40,6 +41,7 @@ class CharacterLife extends $pb.GeneratedMessage {
     if (hitDice != null) result.hitDice.addAll(hitDice);
     if (deathSaveSuccess != null) result.deathSaveSuccess = deathSaveSuccess;
     if (deathSaveFailure != null) result.deathSaveFailure = deathSaveFailure;
+    if (currentHitDice != null) result.currentHitDice.addAll(currentHitDice);
     return result;
   }
 
@@ -70,6 +72,8 @@ class CharacterLife extends $pb.GeneratedMessage {
         protoName: 'deathSaveSuccess')
     ..aI(7, _omitFieldNames ? '' : 'deathSaveFailure',
         protoName: 'deathSaveFailure')
+    ..pPM<$0.Dice>(8, _omitFieldNames ? '' : 'currentHitDice',
+        protoName: 'currentHitDice', subBuilder: $0.Dice.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -147,6 +151,9 @@ class CharacterLife extends $pb.GeneratedMessage {
   $core.bool hasDeathSaveFailure() => $_has(6);
   @$pb.TagNumber(7)
   void clearDeathSaveFailure() => $_clearField(7);
+
+  @$pb.TagNumber(8)
+  $pb.PbList<$0.Dice> get currentHitDice => $_getList(7);
 }
 
 const $core.bool _omitFieldNames =

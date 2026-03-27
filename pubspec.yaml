@@ -24,7 +24,9 @@ dependencies:
   protobuf: ^6.0.0
   path: ^1.9.1
   render_ttrpg_data:
-    git: https://github.com/j7126/render_ttrpg_data
+    git:
+      url: https://github.com/j7126/render_ttrpg_data
+      ref: de6085e7211b4f3e20895211d4ffc6f24c3d3927
   crypto: ^3.0.7
   file_picker: ^10.3.10
   macos_secure_bookmarks: ^0.2.1

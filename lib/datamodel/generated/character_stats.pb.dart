@@ -14,6 +14,8 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'character_stats.pbenum.dart';
+
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
 export 'character_stats.pbenum.dart';
@@ -22,10 +24,14 @@ class CharacterStats extends $pb.GeneratedMessage {
   factory CharacterStats({
     $core.Iterable<$core.MapEntry<$core.int, $core.int>>? base,
     $core.Iterable<$core.MapEntry<$core.int, $core.int>>? current,
+    $core.int? profficencyBonus,
+    StatsMethod? method,
   }) {
     final result = create();
     if (base != null) result.base.addEntries(base);
     if (current != null) result.current.addEntries(current);
+    if (profficencyBonus != null) result.profficencyBonus = profficencyBonus;
+    if (method != null) result.method = method;
     return result;
   }
 
@@ -53,6 +59,10 @@ class CharacterStats extends $pb.GeneratedMessage {
         keyFieldType: $pb.PbFieldType.O3,
         valueFieldType: $pb.PbFieldType.O3,
         packageName: const $pb.PackageName('ttrpg_character_tools'))
+    ..aI(3, _omitFieldNames ? '' : 'profficencyBonus',
+        protoName: 'profficencyBonus')
+    ..aE<StatsMethod>(4, _omitFieldNames ? '' : 'method',
+        enumValues: StatsMethod.values)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -79,6 +89,24 @@ class CharacterStats extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $pb.PbMap<$core.int, $core.int> get current => $_getMap(1);
+
+  @$pb.TagNumber(3)
+  $core.int get profficencyBonus => $_getIZ(2);
+  @$pb.TagNumber(3)
+  set profficencyBonus($core.int value) => $_setSignedInt32(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasProfficencyBonus() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearProfficencyBonus() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  StatsMethod get method => $_getN(3);
+  @$pb.TagNumber(4)
+  set method(StatsMethod value) => $_setField(4, value);
+  @$pb.TagNumber(4)
+  $core.bool hasMethod() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearMethod() => $_clearField(4);
 }
 
 const $core.bool _omitFieldNames =
