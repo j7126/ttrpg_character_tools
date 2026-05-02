@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/condition/condition.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/feature/entry.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/item/item.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/feature/optional_feature.dart';
 import 'package:ttrpg_character_tools/data_load_error.dart';
 
 class DataLoader {
@@ -16,6 +18,7 @@ class DataLoader {
   static List<ClassFeature5e> classFeatures = [];
   static List<Item> items = [];
   static List<Condition> conditions = [];
+  static List<OptionalFeature> optionalFeatures = [];
 
   static List<DataLoadError> errors = [];
 
@@ -26,8 +29,9 @@ class DataLoader {
 
     isLoading = true;
 
-    await loadClasses();
     await loadItems();
+    await loadOptionalFeatures();
+    await loadClasses();
     await loadConditions();
     _hydrateReferences();
     readyNotifier.value = true;
@@ -64,6 +68,24 @@ class DataLoader {
         DataLoadError(
           itemType: 'item',
           itemName: 'items',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  static Future loadOptionalFeatures() async {
+    var path = 'optionalfeatures.json';
+    try {
+      var json = await loadJson(path);
+      var items = json["optionalfeature"] as List<dynamic>;
+      DataLoader.optionalFeatures.addAll(items.map((x) => OptionalFeature.fromJson(x)));
+    } catch (e) {
+      errors.add(
+        DataLoadError(
+          itemType: 'optionalfeature',
+          itemName: 'optionalfeatures',
           filePath: path,
           error: e.toString(),
         ),
@@ -147,9 +169,16 @@ class DataLoader {
 
   static void _hydrateReferences() {
     for (var feat in classFeatures) {
-      for (var entry in feat.entries) {
-        entry.hydrateFeatureReference(classFeatures);
-      }
+      _hydrateEntryReferences(feat.entries);
     }
+  }
+
+  static void _hydrateEntryReferences(List<FeatureEntry> entries) {
+    for (var entry in entries) {
+        entry.hydrateFeatureReference(classFeatures, optionalFeatures);
+        if (entry.entries != null) {
+          _hydrateEntryReferences(entry.entries!);
+        }
+      }
   }
 }

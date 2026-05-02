@@ -15,6 +15,9 @@ class IntFieldBase extends StatefulWidget {
     this.textStyle,
     this.focusNode,
     this.withSign = false,
+    this.isCalculated = false,
+    this.isOverridden = false,
+    this.resetValue,
   });
 
   final String label;
@@ -27,6 +30,9 @@ class IntFieldBase extends StatefulWidget {
   final TextStyle? textStyle;
   final FocusNode? focusNode;
   final bool withSign;
+  final bool isCalculated;
+  final bool isOverridden;
+  final Function()? resetValue;
 
   @override
   State<IntFieldBase> createState() => _IntFieldBaseState();
@@ -38,6 +44,7 @@ class _IntFieldBaseState extends State<IntFieldBase> {
   FocusNode? _focusNode;
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_focusNode ??= FocusNode());
+  bool showingConfirmOverrideDialog = false;
 
   void _updateText() {
     setState(() {
@@ -47,7 +54,11 @@ class _IntFieldBaseState extends State<IntFieldBase> {
     });
   }
 
-  void _valueChanged() {
+  void _valueChanged() async {
+    if (showingConfirmOverrideDialog) {
+      return;
+    }
+
     var value = int.tryParse(controller.text);
     if (value == null) {
       _updateText();
@@ -56,6 +67,45 @@ class _IntFieldBaseState extends State<IntFieldBase> {
 
     if (value == intVal) {
       return;
+    }
+
+    if (widget.isCalculated) {
+      showingConfirmOverrideDialog = true;
+      var result = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Override Field"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("This will override the calculated value."),
+                Text("Are you sure you want to do this?"),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text("No"),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text("Yes"),
+              ),
+            ],
+          );
+        },
+      );
+      showingConfirmOverrideDialog = false;
+      if (result != true) {
+        _updateText();
+        return;
+      }
     }
 
     intVal = value;
@@ -126,6 +176,58 @@ class _IntFieldBaseState extends State<IntFieldBase> {
             : null,
         hintText: widget.label,
         isDense: widget.isDense,
+        suffixIcon: widget.isOverridden
+            ? Tooltip(
+                message: "This field is overriden",
+                child: IconButton(
+                  onPressed: widget.resetValue == null
+                      ? null
+                      : () async {
+                          var result = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Reset Field"),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "This will reset the field to the calculated value.",
+                                    ),
+                                    Text("Are you sure you want to do this?"),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false);
+                                    },
+                                    child: Text("No"),
+                                  ),
+                                  FilledButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                    child: Text("Yes"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          if (result != true) {
+                            return;
+                          }
+
+                          widget.resetValue?.call();
+                        },
+                  icon: Icon(
+                    Icons.replay,
+                    color: ColorScheme.of(context).tertiary,
+                  ),
+                ),
+              )
+            : null,
       ),
       focusNode: _effectiveFocusNode,
       style: widget.textStyle,

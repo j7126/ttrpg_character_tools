@@ -3,4 +3,10 @@ package ttrpg_character_tools;
 
 message Options {
   bool disableColorCodeLife = 1;
+  LevelingMethod levelingMethod = 2;
+}
+
+enum LevelingMethod {
+  Milestone = 0;
+  XP = 1;
 }

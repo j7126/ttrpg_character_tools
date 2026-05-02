@@ -88,6 +88,18 @@ class _CharacterPageState extends State<CharacterPage> {
                 children: [
                   // character stats
                   CharacterStatsWidget(character: character, changed: changed),
+                  // life section
+                  Expanded(
+                    child: CharacterLifeWidget(
+                      character: character,
+                      changed: changed,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   // character skills section
                   Container(
                     constraints: BoxConstraints(maxWidth: 280.0),
@@ -105,13 +117,6 @@ class _CharacterPageState extends State<CharacterPage> {
                           changed: changed,
                         ),
                       ],
-                    ),
-                  ),
-                  // life section
-                  Expanded(
-                    child: CharacterLifeWidget(
-                      character: character,
-                      changed: changed,
                     ),
                   ),
                   Expanded(

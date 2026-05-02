@@ -24,10 +24,17 @@ class CharacterSkills extends $pb.GeneratedMessage {
   factory CharacterSkills({
     $core.Iterable<CharacterSkill>? proficency,
     $core.Iterable<$core.MapEntry<$core.int, $core.int>>? overrides,
+    $core.Iterable<CharacterSkill>? proficencyCalculated,
+    $core.Iterable<$core.MapEntry<$core.String, CharacterSkill>>?
+        proficencyChoices,
   }) {
     final result = create();
     if (proficency != null) result.proficency.addAll(proficency);
     if (overrides != null) result.overrides.addEntries(overrides);
+    if (proficencyCalculated != null)
+      result.proficencyCalculated.addAll(proficencyCalculated);
+    if (proficencyChoices != null)
+      result.proficencyChoices.addEntries(proficencyChoices);
     return result;
   }
 
@@ -55,6 +62,23 @@ class CharacterSkills extends $pb.GeneratedMessage {
         keyFieldType: $pb.PbFieldType.O3,
         valueFieldType: $pb.PbFieldType.O3,
         packageName: const $pb.PackageName('ttrpg_character_tools'))
+    ..pc<CharacterSkill>(
+        3, _omitFieldNames ? '' : 'proficencyCalculated', $pb.PbFieldType.KE,
+        protoName: 'proficencyCalculated',
+        valueOf: CharacterSkill.valueOf,
+        enumValues: CharacterSkill.values,
+        defaultEnumValue: CharacterSkill.Acrobatics)
+    ..m<$core.String, CharacterSkill>(
+        4, _omitFieldNames ? '' : 'proficencyChoices',
+        protoName: 'proficencyChoices',
+        entryClassName: 'CharacterSkills.ProficencyChoicesEntry',
+        keyFieldType: $pb.PbFieldType.OS,
+        valueFieldType: $pb.PbFieldType.OE,
+        valueOf: CharacterSkill.valueOf,
+        enumValues: CharacterSkill.values,
+        valueDefaultOrMaker: CharacterSkill.Acrobatics,
+        defaultEnumValue: CharacterSkill.Acrobatics,
+        packageName: const $pb.PackageName('ttrpg_character_tools'))
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -81,6 +105,12 @@ class CharacterSkills extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $pb.PbMap<$core.int, $core.int> get overrides => $_getMap(1);
+
+  @$pb.TagNumber(3)
+  $pb.PbList<CharacterSkill> get proficencyCalculated => $_getList(2);
+
+  @$pb.TagNumber(4)
+  $pb.PbMap<$core.String, CharacterSkill> get proficencyChoices => $_getMap(3);
 }
 
 const $core.bool _omitFieldNames =

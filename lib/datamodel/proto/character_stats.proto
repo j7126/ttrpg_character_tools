@@ -4,8 +4,11 @@ package ttrpg_character_tools;
 message CharacterStats {
   map<int32, int32> base = 1;
   map<int32, int32> current = 2;
-  int32 profficencyBonus = 3;
+  int32 overrideProficencyBonus = 3;
   StatsMethod method = 4;
+  map<int32, int32> savingThrowOverrides = 5;
+  repeated StatsType savingThrowProficency = 6;
+  repeated StatsType savingThrowProficencyCalculated = 7;
 }
 
 enum StatsType {

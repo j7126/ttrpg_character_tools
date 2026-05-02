@@ -69,8 +69,27 @@ const CharacterSkills$json = {
       '6': '.ttrpg_character_tools.CharacterSkills.OverridesEntry',
       '10': 'overrides'
     },
+    {
+      '1': 'proficencyCalculated',
+      '3': 3,
+      '4': 3,
+      '5': 14,
+      '6': '.ttrpg_character_tools.CharacterSkill',
+      '10': 'proficencyCalculated'
+    },
+    {
+      '1': 'proficencyChoices',
+      '3': 4,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterSkills.ProficencyChoicesEntry',
+      '10': 'proficencyChoices'
+    },
   ],
-  '3': [CharacterSkills_OverridesEntry$json],
+  '3': [
+    CharacterSkills_OverridesEntry$json,
+    CharacterSkills_ProficencyChoicesEntry$json
+  ],
 };
 
 @$core.Deprecated('Use characterSkillsDescriptor instead')
@@ -83,10 +102,32 @@ const CharacterSkills_OverridesEntry$json = {
   '7': {'7': true},
 };
 
+@$core.Deprecated('Use characterSkillsDescriptor instead')
+const CharacterSkills_ProficencyChoicesEntry$json = {
+  '1': 'ProficencyChoicesEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {
+      '1': 'value',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.ttrpg_character_tools.CharacterSkill',
+      '10': 'value'
+    },
+  ],
+  '7': {'7': true},
+};
+
 /// Descriptor for `CharacterSkills`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List characterSkillsDescriptor = $convert.base64Decode(
     'Cg9DaGFyYWN0ZXJTa2lsbHMSRQoKcHJvZmljZW5jeRgBIAMoDjIlLnR0cnBnX2NoYXJhY3Rlcl'
     '90b29scy5DaGFyYWN0ZXJTa2lsbFIKcHJvZmljZW5jeRJTCglvdmVycmlkZXMYAiADKAsyNS50'
     'dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU2tpbGxzLk92ZXJyaWRlc0VudHJ5Uglvdm'
-    'VycmlkZXMaPAoOT3ZlcnJpZGVzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiAB'
-    'KAVSBXZhbHVlOgI4AQ==');
+    'VycmlkZXMSWQoUcHJvZmljZW5jeUNhbGN1bGF0ZWQYAyADKA4yJS50dHJwZ19jaGFyYWN0ZXJf'
+    'dG9vbHMuQ2hhcmFjdGVyU2tpbGxSFHByb2ZpY2VuY3lDYWxjdWxhdGVkEmsKEXByb2ZpY2VuY3'
+    'lDaG9pY2VzGAQgAygLMj0udHRycGdfY2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclNraWxscy5Q'
+    'cm9maWNlbmN5Q2hvaWNlc0VudHJ5UhFwcm9maWNlbmN5Q2hvaWNlcxo8Cg5PdmVycmlkZXNFbn'
+    'RyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGmsKFlByb2Zp'
+    'Y2VuY3lDaG9pY2VzRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSOwoFdmFsdWUYAiABKA4yJS50dH'
+    'JwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU2tpbGxSBXZhbHVlOgI4AQ==');

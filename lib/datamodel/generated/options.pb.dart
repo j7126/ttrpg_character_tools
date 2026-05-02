@@ -14,15 +14,21 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+import 'options.pbenum.dart';
+
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
+
+export 'options.pbenum.dart';
 
 class Options extends $pb.GeneratedMessage {
   factory Options({
     $core.bool? disableColorCodeLife,
+    LevelingMethod? levelingMethod,
   }) {
     final result = create();
     if (disableColorCodeLife != null)
       result.disableColorCodeLife = disableColorCodeLife;
+    if (levelingMethod != null) result.levelingMethod = levelingMethod;
     return result;
   }
 
@@ -42,6 +48,8 @@ class Options extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aOB(1, _omitFieldNames ? '' : 'disableColorCodeLife',
         protoName: 'disableColorCodeLife')
+    ..aE<LevelingMethod>(2, _omitFieldNames ? '' : 'levelingMethod',
+        protoName: 'levelingMethod', enumValues: LevelingMethod.values)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -70,6 +78,15 @@ class Options extends $pb.GeneratedMessage {
   $core.bool hasDisableColorCodeLife() => $_has(0);
   @$pb.TagNumber(1)
   void clearDisableColorCodeLife() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  LevelingMethod get levelingMethod => $_getN(1);
+  @$pb.TagNumber(2)
+  set levelingMethod(LevelingMethod value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasLevelingMethod() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearLevelingMethod() => $_clearField(2);
 }
 
 const $core.bool _omitFieldNames =

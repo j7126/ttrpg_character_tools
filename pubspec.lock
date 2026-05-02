@@ -556,8 +556,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: de6085e7211b4f3e20895211d4ffc6f24c3d3927
-      resolved-ref: de6085e7211b4f3e20895211d4ffc6f24c3d3927
+      ref: "5e5e440591194fa4006c55f849aad0c7494dadc2"
+      resolved-ref: "5e5e440591194fa4006c55f849aad0c7494dadc2"
       url: "https://github.com/j7126/render_ttrpg_data"
     source: git
     version: "0.0.1"

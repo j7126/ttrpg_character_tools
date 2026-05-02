@@ -68,7 +68,13 @@ const CharacterStats$json = {
       '6': '.ttrpg_character_tools.CharacterStats.CurrentEntry',
       '10': 'current'
     },
-    {'1': 'profficencyBonus', '3': 3, '4': 1, '5': 5, '10': 'profficencyBonus'},
+    {
+      '1': 'overrideProficencyBonus',
+      '3': 3,
+      '4': 1,
+      '5': 5,
+      '10': 'overrideProficencyBonus'
+    },
     {
       '1': 'method',
       '3': 4,
@@ -77,8 +83,36 @@ const CharacterStats$json = {
       '6': '.ttrpg_character_tools.StatsMethod',
       '10': 'method'
     },
+    {
+      '1': 'savingThrowOverrides',
+      '3': 5,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterStats.SavingThrowOverridesEntry',
+      '10': 'savingThrowOverrides'
+    },
+    {
+      '1': 'savingThrowProficency',
+      '3': 6,
+      '4': 3,
+      '5': 14,
+      '6': '.ttrpg_character_tools.StatsType',
+      '10': 'savingThrowProficency'
+    },
+    {
+      '1': 'savingThrowProficencyCalculated',
+      '3': 7,
+      '4': 3,
+      '5': 14,
+      '6': '.ttrpg_character_tools.StatsType',
+      '10': 'savingThrowProficencyCalculated'
+    },
   ],
-  '3': [CharacterStats_BaseEntry$json, CharacterStats_CurrentEntry$json],
+  '3': [
+    CharacterStats_BaseEntry$json,
+    CharacterStats_CurrentEntry$json,
+    CharacterStats_SavingThrowOverridesEntry$json
+  ],
 };
 
 @$core.Deprecated('Use characterStatsDescriptor instead')
@@ -101,12 +135,30 @@ const CharacterStats_CurrentEntry$json = {
   '7': {'7': true},
 };
 
+@$core.Deprecated('Use characterStatsDescriptor instead')
+const CharacterStats_SavingThrowOverridesEntry$json = {
+  '1': 'SavingThrowOverridesEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 5, '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
 /// Descriptor for `CharacterStats`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List characterStatsDescriptor = $convert.base64Decode(
     'Cg5DaGFyYWN0ZXJTdGF0cxJDCgRiYXNlGAEgAygLMi8udHRycGdfY2hhcmFjdGVyX3Rvb2xzLk'
     'NoYXJhY3RlclN0YXRzLkJhc2VFbnRyeVIEYmFzZRJMCgdjdXJyZW50GAIgAygLMjIudHRycGdf'
-    'Y2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclN0YXRzLkN1cnJlbnRFbnRyeVIHY3VycmVudBIqCh'
-    'Bwcm9mZmljZW5jeUJvbnVzGAMgASgFUhBwcm9mZmljZW5jeUJvbnVzEjoKBm1ldGhvZBgEIAEo'
-    'DjIiLnR0cnBnX2NoYXJhY3Rlcl90b29scy5TdGF0c01ldGhvZFIGbWV0aG9kGjcKCUJhc2VFbn'
-    'RyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGjoKDEN1cnJl'
-    'bnRFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgB');
+    'Y2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclN0YXRzLkN1cnJlbnRFbnRyeVIHY3VycmVudBI4Ch'
+    'dvdmVycmlkZVByb2ZpY2VuY3lCb251cxgDIAEoBVIXb3ZlcnJpZGVQcm9maWNlbmN5Qm9udXMS'
+    'OgoGbWV0aG9kGAQgASgOMiIudHRycGdfY2hhcmFjdGVyX3Rvb2xzLlN0YXRzTWV0aG9kUgZtZX'
+    'Rob2QScwoUc2F2aW5nVGhyb3dPdmVycmlkZXMYBSADKAsyPy50dHJwZ19jaGFyYWN0ZXJfdG9v'
+    'bHMuQ2hhcmFjdGVyU3RhdHMuU2F2aW5nVGhyb3dPdmVycmlkZXNFbnRyeVIUc2F2aW5nVGhyb3'
+    'dPdmVycmlkZXMSVgoVc2F2aW5nVGhyb3dQcm9maWNlbmN5GAYgAygOMiAudHRycGdfY2hhcmFj'
+    'dGVyX3Rvb2xzLlN0YXRzVHlwZVIVc2F2aW5nVGhyb3dQcm9maWNlbmN5EmoKH3NhdmluZ1Rocm'
+    '93UHJvZmljZW5jeUNhbGN1bGF0ZWQYByADKA4yIC50dHJwZ19jaGFyYWN0ZXJfdG9vbHMuU3Rh'
+    'dHNUeXBlUh9zYXZpbmdUaHJvd1Byb2ZpY2VuY3lDYWxjdWxhdGVkGjcKCUJhc2VFbnRyeRIQCg'
+    'NrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGjoKDEN1cnJlbnRFbnRy'
+    'eRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGkcKGVNhdmluZ1'
+    'Rocm93T3ZlcnJpZGVzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAVSBXZh'
+    'bHVlOgI4AQ==');

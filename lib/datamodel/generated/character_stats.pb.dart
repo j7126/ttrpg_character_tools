@@ -24,14 +24,25 @@ class CharacterStats extends $pb.GeneratedMessage {
   factory CharacterStats({
     $core.Iterable<$core.MapEntry<$core.int, $core.int>>? base,
     $core.Iterable<$core.MapEntry<$core.int, $core.int>>? current,
-    $core.int? profficencyBonus,
+    $core.int? overrideProficencyBonus,
     StatsMethod? method,
+    $core.Iterable<$core.MapEntry<$core.int, $core.int>>? savingThrowOverrides,
+    $core.Iterable<StatsType>? savingThrowProficency,
+    $core.Iterable<StatsType>? savingThrowProficencyCalculated,
   }) {
     final result = create();
     if (base != null) result.base.addEntries(base);
     if (current != null) result.current.addEntries(current);
-    if (profficencyBonus != null) result.profficencyBonus = profficencyBonus;
+    if (overrideProficencyBonus != null)
+      result.overrideProficencyBonus = overrideProficencyBonus;
     if (method != null) result.method = method;
+    if (savingThrowOverrides != null)
+      result.savingThrowOverrides.addEntries(savingThrowOverrides);
+    if (savingThrowProficency != null)
+      result.savingThrowProficency.addAll(savingThrowProficency);
+    if (savingThrowProficencyCalculated != null)
+      result.savingThrowProficencyCalculated
+          .addAll(savingThrowProficencyCalculated);
     return result;
   }
 
@@ -59,10 +70,28 @@ class CharacterStats extends $pb.GeneratedMessage {
         keyFieldType: $pb.PbFieldType.O3,
         valueFieldType: $pb.PbFieldType.O3,
         packageName: const $pb.PackageName('ttrpg_character_tools'))
-    ..aI(3, _omitFieldNames ? '' : 'profficencyBonus',
-        protoName: 'profficencyBonus')
+    ..aI(3, _omitFieldNames ? '' : 'overrideProficencyBonus',
+        protoName: 'overrideProficencyBonus')
     ..aE<StatsMethod>(4, _omitFieldNames ? '' : 'method',
         enumValues: StatsMethod.values)
+    ..m<$core.int, $core.int>(5, _omitFieldNames ? '' : 'savingThrowOverrides',
+        protoName: 'savingThrowOverrides',
+        entryClassName: 'CharacterStats.SavingThrowOverridesEntry',
+        keyFieldType: $pb.PbFieldType.O3,
+        valueFieldType: $pb.PbFieldType.O3,
+        packageName: const $pb.PackageName('ttrpg_character_tools'))
+    ..pc<StatsType>(
+        6, _omitFieldNames ? '' : 'savingThrowProficency', $pb.PbFieldType.KE,
+        protoName: 'savingThrowProficency',
+        valueOf: StatsType.valueOf,
+        enumValues: StatsType.values,
+        defaultEnumValue: StatsType.Strength)
+    ..pc<StatsType>(7, _omitFieldNames ? '' : 'savingThrowProficencyCalculated',
+        $pb.PbFieldType.KE,
+        protoName: 'savingThrowProficencyCalculated',
+        valueOf: StatsType.valueOf,
+        enumValues: StatsType.values,
+        defaultEnumValue: StatsType.Strength)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -91,13 +120,13 @@ class CharacterStats extends $pb.GeneratedMessage {
   $pb.PbMap<$core.int, $core.int> get current => $_getMap(1);
 
   @$pb.TagNumber(3)
-  $core.int get profficencyBonus => $_getIZ(2);
+  $core.int get overrideProficencyBonus => $_getIZ(2);
   @$pb.TagNumber(3)
-  set profficencyBonus($core.int value) => $_setSignedInt32(2, value);
+  set overrideProficencyBonus($core.int value) => $_setSignedInt32(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasProfficencyBonus() => $_has(2);
+  $core.bool hasOverrideProficencyBonus() => $_has(2);
   @$pb.TagNumber(3)
-  void clearProfficencyBonus() => $_clearField(3);
+  void clearOverrideProficencyBonus() => $_clearField(3);
 
   @$pb.TagNumber(4)
   StatsMethod get method => $_getN(3);
@@ -107,6 +136,15 @@ class CharacterStats extends $pb.GeneratedMessage {
   $core.bool hasMethod() => $_has(3);
   @$pb.TagNumber(4)
   void clearMethod() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  $pb.PbMap<$core.int, $core.int> get savingThrowOverrides => $_getMap(4);
+
+  @$pb.TagNumber(6)
+  $pb.PbList<StatsType> get savingThrowProficency => $_getList(5);
+
+  @$pb.TagNumber(7)
+  $pb.PbList<StatsType> get savingThrowProficencyCalculated => $_getList(6);
 }
 
 const $core.bool _omitFieldNames =
