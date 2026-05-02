@@ -18,6 +18,7 @@ class IntFieldBase extends StatefulWidget {
     this.isCalculated = false,
     this.isOverridden = false,
     this.resetValue,
+    this.emptyIsZero = false,
   });
 
   final String label;
@@ -33,6 +34,7 @@ class IntFieldBase extends StatefulWidget {
   final bool isCalculated;
   final bool isOverridden;
   final Function()? resetValue;
+  final bool emptyIsZero;
 
   @override
   State<IntFieldBase> createState() => _IntFieldBaseState();
@@ -59,7 +61,9 @@ class _IntFieldBaseState extends State<IntFieldBase> {
       return;
     }
 
-    var value = int.tryParse(controller.text);
+    var value = controller.text.isEmpty && widget.emptyIsZero
+        ? 0
+        : int.tryParse(controller.text);
     if (value == null) {
       _updateText();
       return;

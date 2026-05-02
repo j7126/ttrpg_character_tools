@@ -50,6 +50,7 @@ class CharacterLifeWidget extends StatelessWidget {
               character.life.temporaryHitPoints = val;
               changed();
             },
+            emptyIsZero: true,
           ),
         ),
         Row(
