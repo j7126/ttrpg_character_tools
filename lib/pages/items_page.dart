@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:render_ttrpg_data/data_views/5e/items_view.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
@@ -32,7 +33,7 @@ class _ClassesPageState extends State<ItemsPage> {
       title: "Items",
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
-          : ItemsView(items: DataLoader.items),
+          : ItemsView(items: [...DataModel5e.items, ...DataModel5e.itemGroups]),
     );
   }
 }

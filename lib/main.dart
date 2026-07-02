@@ -7,6 +7,7 @@ import 'package:ttrpg_character_tools/character/characters_page.dart';
 import 'package:ttrpg_character_tools/pages/classes_page.dart';
 import 'package:ttrpg_character_tools/pages/conditions_page.dart';
 import 'package:ttrpg_character_tools/pages/items_page.dart';
+import 'package:ttrpg_character_tools/pages/spells_page.dart';
 import 'package:ttrpg_character_tools/service/settings.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -88,6 +89,11 @@ class _AppState extends State<App> {
               case "/conditions":
                 return PageRouteBuilder(
                   pageBuilder: (_, _, _) => const ConditionsPage(),
+                  settings: settings,
+                );
+              case "/spells":
+                return PageRouteBuilder(
+                  pageBuilder: (_, _, _) => const SpellsPage(),
                   settings: settings,
                 );
               default:

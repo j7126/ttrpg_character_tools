@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:render_ttrpg_data/data_views/5e/spells_view.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
-import 'package:render_ttrpg_data/data_views/5e/classes_view.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
-import 'package:ttrpg_character_tools/pages/class_page.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
 
-class ClassesPage extends StatefulWidget {
-  const ClassesPage({super.key});
+class SpellsPage extends StatefulWidget {
+  const SpellsPage({super.key});
 
   @override
-  State<ClassesPage> createState() => _ClassesPageState();
+  State<SpellsPage> createState() => _ClassesPageState();
 }
 
-class _ClassesPageState extends State<ClassesPage> {
+class _ClassesPageState extends State<SpellsPage> {
   @override
   void initState() {
     DataLoader.loadData();
@@ -31,20 +30,10 @@ class _ClassesPageState extends State<ClassesPage> {
 
     return PageScaffold(
       adaptiveInfo: adaptiveInfo,
-      title: "Classes",
+      title: "Spells",
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
-          : ClassesView(
-              classes: DataModel5e.classes,
-              onOpen: (c) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ClassPage(class5e: c),
-                  ),
-                );
-              },
-            ),
+          : SpellsView(spells: DataModel5e.spells),
     );
   }
 }

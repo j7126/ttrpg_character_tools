@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
@@ -189,7 +190,7 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
                           },
                       suggestionsBuilder:
                           (BuildContext context, SearchController controller) {
-                            return DataLoader.classes
+                            return DataModel5e.classes
                                 .where(
                                   (x) => x.name.toLowerCase().contains(
                                     searchController.text.toLowerCase(),

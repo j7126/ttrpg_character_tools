@@ -1,24 +1,25 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/condition/condition.dart';
-import 'package:render_ttrpg_data/datamodel/5e/data/feature/entry.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/generic/entry.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/item/item.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/feature/optional_feature.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/item/item_group.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/item/item_property.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/item/item_type.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell.dart';
 import 'package:ttrpg_character_tools/data_load_error.dart';
 
 class DataLoader {
   static final ValueNotifier<bool> readyNotifier = ValueNotifier<bool>(false);
   static bool get ready => readyNotifier.value;
   static bool isLoading = false;
-  static List<Class5e> classes = [];
-  static List<ClassFeature5e> classFeatures = [];
-  static List<Item> items = [];
-  static List<Condition> conditions = [];
-  static List<OptionalFeature> optionalFeatures = [];
 
   static List<DataLoadError> errors = [];
 
@@ -30,6 +31,7 @@ class DataLoader {
     isLoading = true;
 
     await loadItems();
+    await loadSpells();
     await loadOptionalFeatures();
     await loadClasses();
     await loadConditions();
@@ -42,7 +44,13 @@ class DataLoader {
     try {
       var json = await loadJson(path);
       var items = json["baseitem"] as List<dynamic>;
-      DataLoader.items.addAll(items.map((x) => Item.fromJson(x)));
+      DataModel5e.items.addAll(items.map((x) => Item.fromJson(x)));
+      var itemTypes = json["itemType"] as List<dynamic>;
+      DataModel5e.itemTypes.addAll(itemTypes.map((x) => ItemType.fromJson(x)));
+      var itemProperties = json["itemProperty"] as List<dynamic>;
+      DataModel5e.itemProperties.addAll(
+        itemProperties.map((x) => ItemProperty.fromJson(x)),
+      );
     } catch (e) {
       errors.add(
         DataLoadError(
@@ -58,10 +66,14 @@ class DataLoader {
     try {
       var json = await loadJson(path);
       var items = json["item"] as List<dynamic>;
-      DataLoader.items.addAll(
+      DataModel5e.items.addAll(
         items
             .where((x) => x is Map<String, dynamic> && !x.containsKey("_copy"))
             .map((x) => Item.fromJson(x)),
+      );
+      var itemGroups = json["itemGroup"] as List<dynamic>;
+      DataModel5e.itemGroups.addAll(
+        (itemGroups.map((x) => ItemGroup.fromJson(x))),
       );
     } catch (e) {
       errors.add(
@@ -73,6 +85,36 @@ class DataLoader {
         ),
       );
     }
+
+    DataModel5e.items.sortBy((x) => x.name);
+    DataModel5e.itemGroups.sortBy((x) => x.name);
+  }
+
+  static Future loadSpells() async {
+    var path = 'spells/index.json';
+    var indexJson = await loadJson(path);
+    final isPathAllowed = RegExp(r'^[a-zA-Z\-]+\.json$');
+    for (var file in indexJson.values) {
+      if (file is String && isPathAllowed.hasMatch(file)) {
+        path = "spells/$file";
+        try {
+          var json = await loadJson(path);
+          var spells = json["spell"] as List<dynamic>;
+          DataModel5e.spells.addAll(spells.map((x) => Spell.fromJson(x)));
+        } catch (e) {
+          errors.add(
+            DataLoadError(
+              itemType: 'spell',
+              itemName: file,
+              filePath: path,
+              error: e.toString(),
+            ),
+          );
+        }
+      }
+    }
+
+    DataModel5e.spells.sortBy((x) => x.name);
   }
 
   static Future loadOptionalFeatures() async {
@@ -80,7 +122,9 @@ class DataLoader {
     try {
       var json = await loadJson(path);
       var items = json["optionalfeature"] as List<dynamic>;
-      DataLoader.optionalFeatures.addAll(items.map((x) => OptionalFeature.fromJson(x)));
+      DataModel5e.optionalFeatures.addAll(
+        items.map((x) => OptionalFeature.fromJson(x)),
+      );
     } catch (e) {
       errors.add(
         DataLoadError(
@@ -98,7 +142,7 @@ class DataLoader {
     try {
       var json = await loadJson(path);
       var conditions = json["condition"] as List<dynamic>;
-      DataLoader.conditions.addAll(
+      DataModel5e.conditions.addAll(
         conditions.map((x) => Condition.fromJson(x)),
       );
     } catch (e) {
@@ -144,10 +188,14 @@ class DataLoader {
       try {
         var json = await loadJson(path);
         var features = json["classFeature"] as List<dynamic>;
-        classFeatures.addAll(features.map((x) => ClassFeature5e.fromJson(x)));
+        DataModel5e.classFeatures.addAll(
+          features.map((x) => ClassFeature5e.fromJson(x)),
+        );
         var classesJson = json["class"] as List<dynamic>;
-        classes.addAll(
-          classesJson.map((x) => Class5e.fromJson(x, classFeatures)),
+        DataModel5e.classes.addAll(
+          classesJson.map(
+            (x) => Class5e.fromJson(x, DataModel5e.classFeatures),
+          ),
         );
       } catch (e) {
         errors.add(
@@ -168,17 +216,23 @@ class DataLoader {
   }
 
   static void _hydrateReferences() {
-    for (var feat in classFeatures) {
+    for (var feat in DataModel5e.classFeatures) {
       _hydrateEntryReferences(feat.entries);
+    }
+    for (var item in DataModel5e.items) {
+      item.hydrateReferences();
+    }
+    for (var item in DataModel5e.itemGroups) {
+      item.hydrateReferences();
     }
   }
 
   static void _hydrateEntryReferences(List<FeatureEntry> entries) {
     for (var entry in entries) {
-        entry.hydrateFeatureReference(classFeatures, optionalFeatures);
-        if (entry.entries != null) {
-          _hydrateEntryReferences(entry.entries!);
-        }
+      entry.hydrateReferences();
+      if (entry.entries != null) {
+        _hydrateEntryReferences(entry.entries!);
       }
+    }
   }
 }

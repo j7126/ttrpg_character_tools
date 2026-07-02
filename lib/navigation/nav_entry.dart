@@ -55,5 +55,11 @@ class NavEntry {
       label: "Conditions",
       route: "/conditions",
     ),
+    const NavEntry(
+      icon: Icons.auto_fix_high_outlined,
+      selectedIcon: Icons.auto_fix_high,
+      label: "Spells",
+      route: "/spells",
+    ),
   ];
 }

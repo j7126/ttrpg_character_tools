@@ -27,7 +27,7 @@ dependencies:
     #path: ../render_ttrpg_data
     git:
       url: https://github.com/j7126/render_ttrpg_data
-      ref: 5e5e440591194fa4006c55f849aad0c7494dadc2
+      ref: 289ab4741d9c39008532df2995efb9f95067159e
   crypto: ^3.0.7
   file_picker: ^10.3.10
   macos_secure_bookmarks: ^0.2.1
@@ -47,4 +47,5 @@ flutter:
 
   assets:
     - data/class/
+    - data/spells/
     - data/
