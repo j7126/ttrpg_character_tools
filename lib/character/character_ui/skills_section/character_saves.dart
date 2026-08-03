@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/character/character_ui/base_field/field_reset_button.dart';
 import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character_skills.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 
 class CharacterSavesWidget extends StatelessWidget {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:render_ttrpg_data/data_views/5e/conditions_view.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';

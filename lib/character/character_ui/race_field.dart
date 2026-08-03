@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
-import 'package:ttrpg_character_tools/character/character_ui/class_selection/manage_class_dialog.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
 class RaceField extends StatelessWidget {

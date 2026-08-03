@@ -58,8 +58,9 @@ class CharacterFileFormat {
   }
 
   static Future<CharacterFileResult> readFile(File file) async {
-    if (!await file.exists())
+    if (!await file.exists()) {
       throw FileSystemException('File not found', file.path);
+    }
 
     final bytes = await file.readAsBytes();
     if (bytes.length < headerSize) {
@@ -105,8 +106,9 @@ class CharacterFileFormat {
 
     // verify payload hash
     var payloadDigest = sha256.convert(payload).bytes;
-    if (!_listEquals(payloadDigest, footerPayloadHash))
+    if (!_listEquals(payloadDigest, footerPayloadHash)) {
       throw FileFormatException('Payload hash mismatch');
+    }
 
     return CharacterFileResult(payload: payload, flags: flags);
   }
