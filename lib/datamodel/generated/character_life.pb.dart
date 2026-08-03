@@ -27,7 +27,7 @@ class CharacterLife extends $pb.GeneratedMessage {
     $core.int? temporaryHitPoints,
     MaxHitPoints? maxHitPoints,
     $core.int? maxHitPointsQty,
-    $core.Iterable<$0.Dice>? hitDice,
+    $core.Iterable<$0.Dice>? hitDiceMaxOverride,
     $core.int? deathSaveSuccess,
     $core.int? deathSaveFailure,
     $core.Iterable<$0.Dice>? currentHitDice,
@@ -38,7 +38,8 @@ class CharacterLife extends $pb.GeneratedMessage {
       result.temporaryHitPoints = temporaryHitPoints;
     if (maxHitPoints != null) result.maxHitPoints = maxHitPoints;
     if (maxHitPointsQty != null) result.maxHitPointsQty = maxHitPointsQty;
-    if (hitDice != null) result.hitDice.addAll(hitDice);
+    if (hitDiceMaxOverride != null)
+      result.hitDiceMaxOverride.addAll(hitDiceMaxOverride);
     if (deathSaveSuccess != null) result.deathSaveSuccess = deathSaveSuccess;
     if (deathSaveFailure != null) result.deathSaveFailure = deathSaveFailure;
     if (currentHitDice != null) result.currentHitDice.addAll(currentHitDice);
@@ -66,8 +67,8 @@ class CharacterLife extends $pb.GeneratedMessage {
         protoName: 'maxHitPoints', enumValues: MaxHitPoints.values)
     ..aI(4, _omitFieldNames ? '' : 'maxHitPointsQty',
         protoName: 'maxHitPointsQty')
-    ..pPM<$0.Dice>(5, _omitFieldNames ? '' : 'hitDice',
-        protoName: 'hitDice', subBuilder: $0.Dice.create)
+    ..pPM<$0.Dice>(5, _omitFieldNames ? '' : 'hitDiceMaxOverride',
+        protoName: 'hitDiceMaxOverride', subBuilder: $0.Dice.create)
     ..aI(6, _omitFieldNames ? '' : 'deathSaveSuccess',
         protoName: 'deathSaveSuccess')
     ..aI(7, _omitFieldNames ? '' : 'deathSaveFailure',
@@ -132,7 +133,7 @@ class CharacterLife extends $pb.GeneratedMessage {
   void clearMaxHitPointsQty() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $pb.PbList<$0.Dice> get hitDice => $_getList(4);
+  $pb.PbList<$0.Dice> get hitDiceMaxOverride => $_getList(4);
 
   @$pb.TagNumber(6)
   $core.int get deathSaveSuccess => $_getIZ(5);

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:render_ttrpg_data/data_views/5e/races_view.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
-import 'package:render_ttrpg_data/data_views/5e/items_view.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
 
-class ItemsPage extends StatefulWidget {
-  const ItemsPage({super.key});
+class RacesPage extends StatefulWidget {
+  const RacesPage({super.key});
 
   @override
-  State<ItemsPage> createState() => _ClassesPageState();
+  State<RacesPage> createState() => _ClassesPageState();
 }
 
-class _ClassesPageState extends State<ItemsPage> {
+class _ClassesPageState extends State<RacesPage> {
   @override
   void initState() {
     DataLoader.loadData();
@@ -32,7 +32,7 @@ class _ClassesPageState extends State<ItemsPage> {
       title: "Items",
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
-          : ItemsView(),
+          : RacesView(),
     );
   }
 }

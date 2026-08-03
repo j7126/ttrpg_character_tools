@@ -33,7 +33,7 @@ class _ConditionsPageState extends State<ConditionsPage> {
       title: "Items",
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
-          : ConditionsView(conditions: DataModel5e.conditions),
+          : ConditionsView(),
     );
   }
 }

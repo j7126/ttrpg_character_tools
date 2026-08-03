@@ -35,7 +35,6 @@ class _ClassesPageState extends State<ClassesPage> {
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
           : ClassesView(
-              classes: DataModel5e.classes,
               onOpen: (c) {
                 Navigator.push(
                   context,

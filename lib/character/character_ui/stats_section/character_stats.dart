@@ -24,38 +24,25 @@ class CharacterStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(maxWidth: 280.0),
-      child: Row(
-        children: [
+    return Row(
+      children: [
+        for (var stat in availableStats.take(3))
           Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var stat in availableStats.take(3))
-                  CharacterStatField(
-                    stat: stat,
-                    character: character,
-                    changed: changed,
-                  ),
-              ],
+            child: CharacterStatField(
+              stat: stat,
+              character: character,
+              changed: changed,
             ),
           ),
+        for (var stat in availableStats.skip(3))
           Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var stat in availableStats.skip(3))
-                  CharacterStatField(
-                    stat: stat,
-                    character: character,
-                    changed: changed,
-                  ),
-              ],
+            child: CharacterStatField(
+              stat: stat,
+              character: character,
+              changed: changed,
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }

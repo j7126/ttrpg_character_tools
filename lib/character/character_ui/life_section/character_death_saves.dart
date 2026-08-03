@@ -48,27 +48,30 @@ class CharacterDeathSaves extends StatelessWidget {
           border: OutlineInputBorder(),
           labelText: "Death Saves",
         ),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text("Successes"),
-                successCheckbox(1),
-                successCheckbox(2),
-                successCheckbox(3),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text("Failures"),
-                failCheckbox(1),
-                failCheckbox(2),
-                failCheckbox(3),
-              ],
-            ),
-          ],
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Successes"),
+                  successCheckbox(1),
+                  successCheckbox(2),
+                  successCheckbox(3),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Failures"),
+                  failCheckbox(1),
+                  failCheckbox(2),
+                  failCheckbox(3),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

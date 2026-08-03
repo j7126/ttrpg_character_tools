@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ttrpg_character_tools/character/character_ui/base_field/field_reset_button.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/dice_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/dice.pb.dart';
 
@@ -18,6 +19,7 @@ class DiceFieldBase extends StatefulWidget {
     this.isCalculated = false,
     this.isOverridden = false,
     this.resetValue,
+    this.selectOnFocus = false,
   });
 
   final String label;
@@ -32,6 +34,7 @@ class DiceFieldBase extends StatefulWidget {
   final bool isCalculated;
   final bool isOverridden;
   final Function()? resetValue;
+  final bool selectOnFocus;
 
   @override
   State<DiceFieldBase> createState() => _DiceFieldBaseState();
@@ -103,6 +106,13 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
   void _handleFocusChanged() {
     if (!_effectiveFocusNode.hasFocus) {
       _valueChanged();
+    } else {
+      if (widget.selectOnFocus) {
+        controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: controller.value.text.length,
+        );
+      }
     }
   }
 
@@ -159,54 +169,11 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
         hintText: widget.label,
         isDense: widget.isDense,
         suffixIcon: widget.isOverridden
-            ? Tooltip(
-                message: "This field is overriden",
-                child: IconButton(
-                  onPressed: widget.resetValue == null
-                      ? null
-                      : () async {
-                          var result = await showDialog<bool>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text("Reset Field"),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "This will reset the field to the calculated value.",
-                                    ),
-                                    Text("Are you sure you want to do this?"),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop(false);
-                                    },
-                                    child: Text("No"),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop(true);
-                                    },
-                                    child: Text("Yes"),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                          if (result != true) {
-                            return;
-                          }
-
-                          widget.resetValue?.call();
-                        },
-                  icon: Icon(
-                    Icons.replay,
-                    color: ColorScheme.of(context).tertiary,
-                  ),
+            ? Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Tooltip(
+                  message: "This field is overriden",
+                  child: FieldResetButton(resetValue: widget.resetValue),
                 ),
               )
             : null,

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message CharacterClassInfo {
+  string className = 1;
+  string classSource = 2;
+  int32 classLevel = 3;
+  string subClassName = 4;
+  string subClassSource = 5;
+}

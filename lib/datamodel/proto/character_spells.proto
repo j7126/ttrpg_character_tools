@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+import "character_spell_info.proto";
+
+message CharacterSpells {
+  repeated CharacterSpellInfo knownSpells = 1;
+  repeated CharacterSpellInfo preparedSpells = 2;
+}

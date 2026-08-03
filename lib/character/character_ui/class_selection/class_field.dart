@@ -3,27 +3,23 @@ import 'package:ttrpg_character_tools/character/character_ui/class_selection/man
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
 class ClassField extends StatelessWidget {
-  const ClassField({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
+  const ClassField({super.key, required this.character, required this.changed});
 
   final Character character;
   final Function() changed;
 
   String getClassText() {
-    if (character.classAndLevel.isEmpty) {
+    if (character.classInfo.isEmpty) {
       return "None Selected";
     }
 
     var text = "";
 
-    for (var kvp in character.classAndLevel.entries) {
+    for (var classInfo in character.classInfo) {
       if (text.isNotEmpty) {
         text += ", ";
       }
-      text += "${kvp.key} ${kvp.value}";
+      text += "${classInfo.className} ${classInfo.classLevel}";
     }
 
     return text;
@@ -38,10 +34,7 @@ class ClassField extends StatelessWidget {
           showDialog(
             context: context,
             builder: (context) {
-              return ManageClassDialog(
-                character: character,
-                changed: changed,
-              );
+              return ManageClassDialog(character: character, changed: changed);
             },
           );
         },

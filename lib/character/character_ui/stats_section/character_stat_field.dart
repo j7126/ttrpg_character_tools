@@ -66,12 +66,12 @@ class _CharacterStatFieldState extends State<CharacterStatField> {
                 ),
                 isFocused: focusNode.hasFocus,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 6.0, bottom: 18.0),
+                  padding: const EdgeInsets.only(top: 4.0, bottom: 14.0),
                   child: Text(
                     widget.character.stats
                         .getStatModifier(widget.stat.key)
                         .toStringWithSign(),
-                    style: TextStyle(fontSize: 32.0),
+                    style: TextStyle(fontSize: 28.0),
                     textAlign: TextAlign.center,
                   ),
                 ),

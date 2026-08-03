@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:render_ttrpg_data/data_views/5e/spells_view.dart';
-import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
@@ -33,7 +32,7 @@ class _ClassesPageState extends State<SpellsPage> {
       title: "Spells",
       body: !DataLoader.ready
           ? const Center(child: CircularProgressIndicator())
-          : SpellsView(spells: DataModel5e.spells),
+          : SpellsView(),
     );
   }
 }

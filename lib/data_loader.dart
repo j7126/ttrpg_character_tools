@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/subclass.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/condition/condition.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/generic/entry.dart';
@@ -13,7 +14,10 @@ import 'package:render_ttrpg_data/datamodel/5e/data/feature/optional_feature.dar
 import 'package:render_ttrpg_data/datamodel/5e/data/item/item_group.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/item/item_property.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/item/item_type.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/json_processer_5e.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/race/race.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell_source.dart';
 import 'package:ttrpg_character_tools/data_load_error.dart';
 
 class DataLoader {
@@ -35,6 +39,7 @@ class DataLoader {
     await loadOptionalFeatures();
     await loadClasses();
     await loadConditions();
+    await loadRaces();
     _hydrateReferences();
     readyNotifier.value = true;
   }
@@ -91,7 +96,32 @@ class DataLoader {
   }
 
   static Future loadSpells() async {
-    var path = 'spells/index.json';
+    var path = 'spells/sources.json';
+    try {
+      var json = await loadJson(path);
+      for (var sourceEntry in json.entries) {
+        var source = sourceEntry.key;
+        DataModel5e.spellSources[source] = {};
+        if (sourceEntry.value is Map<String, dynamic>) {
+          for (var spellEntry
+              in (sourceEntry.value as Map<String, dynamic>).entries) {
+            DataModel5e.spellSources[source]![spellEntry.key] =
+                SpellSource.fromJson(spellEntry.value);
+          }
+        }
+      }
+    } catch (e) {
+      errors.add(
+        DataLoadError(
+          itemType: 'spell-source',
+          itemName: 'sources',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
+    }
+
+    path = 'spells/index.json';
     var indexJson = await loadJson(path);
     final isPathAllowed = RegExp(r'^[a-zA-Z\-]+\.json$');
     for (var file in indexJson.values) {
@@ -157,11 +187,32 @@ class DataLoader {
     }
   }
 
+  static Future loadRaces() async {
+    var path = 'races.json';
+    try {
+      var json = await loadJson(path);
+      var races = json["race"] as List<dynamic>;
+      DataModel5e.races.addAll(races.map((x) => Race.fromJson(x)));
+    } catch (e) {
+      errors.add(
+        DataLoadError(
+          itemType: 'race',
+          itemName: 'race',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
   static Future loadClasses() async {
     var indexPath = 'class/index.json';
     var index = await loadJson(indexPath);
     for (var kvp in index.entries) {
       var filename = kvp.value;
+      if (filename == "class-sidekick.json") {
+        continue;
+      }
       if (filename is! String) {
         errors.add(
           DataLoadError(
@@ -191,10 +242,20 @@ class DataLoader {
         DataModel5e.classFeatures.addAll(
           features.map((x) => ClassFeature5e.fromJson(x)),
         );
+        var subclassFeature = json["subclassFeature"] as List<dynamic>?;
+        DataModel5e.classFeatures.addAll(
+          subclassFeature?.map((x) => ClassFeature5e.fromJson(x)) ?? [],
+        );
         var classesJson = json["class"] as List<dynamic>;
         DataModel5e.classes.addAll(
           classesJson.map(
             (x) => Class5e.fromJson(x, DataModel5e.classFeatures),
+          ),
+        );
+        var subClassesJson = json["subclass"] as List<dynamic>;
+        DataModel5e.subClasses.addAll(
+          subClassesJson.map(
+            (x) => SubClass.fromJson(x, DataModel5e.classFeatures),
           ),
         );
       } catch (e) {
@@ -212,7 +273,7 @@ class DataLoader {
 
   static Future<Map<String, dynamic>> loadJson(String path) async {
     String json = await rootBundle.loadString("data/$path");
-    return await compute((j) => jsonDecode(j), json);
+    return await compute((j) => JsonProcesser5e.process(jsonDecode(j)), json);
   }
 
   static void _hydrateReferences() {
@@ -224,6 +285,9 @@ class DataLoader {
     }
     for (var item in DataModel5e.itemGroups) {
       item.hydrateReferences();
+    }
+    for (var spell in DataModel5e.spells) {
+      spell.hydrateReferences();
     }
   }
 

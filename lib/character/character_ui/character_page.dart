@@ -3,9 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
 import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
-import 'package:ttrpg_character_tools/character/character_ui/features_and_traits_section/class_features.dart';
+import 'package:ttrpg_character_tools/character/character_ui/features_and_traits_section/character_features.dart';
 import 'package:ttrpg_character_tools/character/character_ui/life_section/character_life.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_proficiency_field.dart';
+import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_saves.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_skills.dart';
 import 'package:ttrpg_character_tools/character/character_ui/stats_section/character_stats.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
@@ -83,20 +84,8 @@ class _CharacterPageState extends State<CharacterPage> {
             children: [
               // character info
               CharacterInfoWidget(character: character, changed: changed),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // character stats
-                  CharacterStatsWidget(character: character, changed: changed),
-                  // life section
-                  Expanded(
-                    child: CharacterLifeWidget(
-                      character: character,
-                      changed: changed,
-                    ),
-                  ),
-                ],
-              ),
+              // character stats
+              CharacterStatsWidget(character: character, changed: changed),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -111,6 +100,11 @@ class _CharacterPageState extends State<CharacterPage> {
                           character: character,
                           changed: changed,
                         ),
+                        // saving throws
+                        CharacterSavesWidget(
+                          character: character,
+                          changed: changed,
+                        ),
                         // skills
                         CharacterSkillsWidget(
                           character: character,
@@ -120,9 +114,17 @@ class _CharacterPageState extends State<CharacterPage> {
                     ),
                   ),
                   Expanded(
-                    child: ClassFeatures(
-                      character: character,
-                      changed: changed,
+                    child: Column(
+                      children: [
+                        CharacterLifeWidget(
+                          character: character,
+                          changed: changed,
+                        ),
+                        CharacterFeatures(
+                          character: character,
+                          changed: changed,
+                        ),
+                      ],
                     ),
                   ),
                 ],

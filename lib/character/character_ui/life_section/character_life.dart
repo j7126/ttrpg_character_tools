@@ -53,23 +53,9 @@ class CharacterLifeWidget extends StatelessWidget {
             emptyIsZero: true,
           ),
         ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: CharacterHitDiceField(
-                character: character,
-                changed: changed,
-              ),
-            ),
-            Expanded(
-              child: CharacterDeathSaves(
-                character: character,
-                changed: changed,
-              ),
-            ),
-          ],
-        ),
+        CharacterHitDiceField(character: character, changed: changed),
+        if (character.life.hitPoints == 0)
+          CharacterDeathSaves(character: character, changed: changed),
       ],
     );
   }

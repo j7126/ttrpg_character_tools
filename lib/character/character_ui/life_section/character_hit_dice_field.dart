@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:ttrpg_character_tools/character/character_ui/base_field/dice_field_base.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
 class CharacterHitDiceField extends StatefulWidget {
@@ -71,10 +72,17 @@ class _CharacterHitDiceFieldState extends State<CharacterHitDiceField> {
                       textAlign: TextAlign.center,
                       textStyle: TextStyle(fontSize: 14),
                       focusNode: maxFocusNode,
-                      value: widget.character.life.hitDice,
+                      value: widget.character.hitDiceMax,
+                      isCalculated: true,
+                      isOverridden:
+                          widget.character.life.hitDiceMaxOverride.isNotEmpty,
                       valueChanged: (val) {
-                        widget.character.life.hitDice.clear();
-                        widget.character.life.hitDice.addAll(val);
+                        widget.character.life.hitDiceMaxOverride.clear();
+                        widget.character.life.hitDiceMaxOverride.addAll(val);
+                        widget.changed();
+                      },
+                      resetValue: () {
+                        widget.character.life.hitDiceMaxOverride.clear();
                         widget.changed();
                       },
                     ),

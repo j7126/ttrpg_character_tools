@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message CharacterSpellInfo {
+  string spellName = 1;
+  string spellSource = 2;
+  string spellClassName = 3;
+  string spellClassSource = 4;
+}

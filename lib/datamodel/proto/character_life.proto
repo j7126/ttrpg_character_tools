@@ -8,7 +8,7 @@ message CharacterLife {
   int32 temporaryHitPoints = 2;
   MaxHitPoints maxHitPoints = 3;
   optional int32 maxHitPointsQty = 4;
-  repeated Dice hitDice = 5;
+  repeated Dice hitDiceMaxOverride = 5;
   int32 deathSaveSuccess = 6;
   int32 deathSaveFailure = 7;
   repeated Dice currentHitDice = 8;

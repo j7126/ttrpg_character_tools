@@ -6,6 +6,7 @@ import "character_stats.proto";
 import "character_skills.proto";
 import "character_life.proto";
 import "character_alignment.proto";
+import "character_class_info.proto";
 import "google/protobuf/timestamp.proto";
 
 message Character {
@@ -13,7 +14,6 @@ message Character {
   string name = 2;
   google.protobuf.Timestamp createdTimestamp = 5;
   Options options = 6;
-  map<string, int32> classAndLevel = 7;
   string background = 8;
   string race = 9;
   string subRace = 10;
@@ -22,4 +22,5 @@ message Character {
   CharacterLife life = 13;
   CharacterStats stats = 14;
   CharacterSkills skills = 15;
+  repeated CharacterClassInfo classInfo = 17;
 }

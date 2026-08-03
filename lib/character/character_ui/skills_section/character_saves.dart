@@ -6,9 +6,10 @@ import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_e
 import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_skills.pb.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 
-class CharacterSkillsWidget extends StatelessWidget {
-  const CharacterSkillsWidget({
+class CharacterSavesWidget extends StatelessWidget {
+  const CharacterSavesWidget({
     super.key,
     required this.character,
     required this.changed,
@@ -17,25 +18,13 @@ class CharacterSkillsWidget extends StatelessWidget {
   final Character character;
   final Function() changed;
 
-  static const List<CharacterSkill> skills = [
-    CharacterSkill.Acrobatics,
-    CharacterSkill.AnimalHandling,
-    CharacterSkill.Arcana,
-    CharacterSkill.Athletics,
-    CharacterSkill.Deception,
-    CharacterSkill.History,
-    CharacterSkill.Insight,
-    CharacterSkill.Intimidation,
-    CharacterSkill.Investigation,
-    CharacterSkill.Medicine,
-    CharacterSkill.Nature,
-    CharacterSkill.Perception,
-    CharacterSkill.Performance,
-    CharacterSkill.Persuasion,
-    CharacterSkill.Religion,
-    CharacterSkill.SleightOfHand,
-    CharacterSkill.Stealth,
-    CharacterSkill.Survival,
+  static const List<StatsType> saves = [
+    StatsType.Strength,
+    StatsType.Dexterity,
+    StatsType.Constitution,
+    StatsType.Intelligence,
+    StatsType.Wisdom,
+    StatsType.Charisma,
   ];
 
   @override
@@ -44,32 +33,35 @@ class CharacterSkillsWidget extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: "Skills",
+          labelText: "Saving Throws",
           border: OutlineInputBorder(),
           isDense: true,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (var skill in skills)
+            for (var save in saves)
               Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Checkbox(
                     activeColor:
-                        character.skills.proficencyCalculated.contains(skill)
+                        character.stats.savingThrowProficencyCalculated
+                            .contains(save)
                         ? null
                         : ColorScheme.of(context).tertiary,
-                    value: character.isProficient(skill),
+                    value: character.isProficientSave(save),
                     onChanged:
-                        !character.isProficient(skill) ||
-                            character.skills.proficency.contains(skill)
+                        !character.isProficientSave(save) ||
+                            character.stats.savingThrowProficency.contains(save)
                         ? (value) {
                             if (value == true) {
-                              character.skills.proficency.add(skill);
+                              character.stats.savingThrowProficency.add(save);
                             } else {
-                              character.skills.proficency.remove(skill);
+                              character.stats.savingThrowProficency.remove(
+                                save,
+                              );
                             }
                             changed();
                           }
@@ -84,25 +76,25 @@ class CharacterSkillsWidget extends StatelessWidget {
                       withSign: true,
                       inputBorder: UnderlineInputBorder(),
                       textStyle: TextStyle(fontSize: 14),
-                      value: character.getSkillModifier(skill),
+                      value: character.getSaveModifier(save),
                       valueChanged: (val) {
-                        character.skills.overrides[skill.value] = val;
+                        character.stats.savingThrowOverrides[save.value] = val;
                         changed();
                       },
                       isCalculated: true,
                       hideResetButton: true,
-                      isOverridden: character.skills.overrides.containsKey(
-                        skill.value,
-                      ),
+                      isOverridden: character.stats.savingThrowOverrides
+                          .containsKey(save.value),
                     ),
                   ),
-                  Text(skill.name),
-                  Text(" (${skill.associatedStat.shortName})"),
+                  Text(save.name),
                   Spacer(),
-                  if (character.skills.overrides.containsKey(skill.value))
+                  if (character.stats.savingThrowOverrides.containsKey(
+                    save.value,
+                  ))
                     FieldResetButton(
                       resetValue: () {
-                        character.skills.overrides.remove(skill.value);
+                        character.stats.savingThrowOverrides.remove(save.value);
                         changed();
                       },
                     ),

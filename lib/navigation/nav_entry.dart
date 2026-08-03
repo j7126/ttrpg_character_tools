@@ -61,5 +61,11 @@ class NavEntry {
       label: "Spells",
       route: "/spells",
     ),
+    const NavEntry(
+      icon: Icons.person_outline,
+      selectedIcon: Icons.person,
+      label: "Races",
+      route: "/races",
+    ),
   ];
 }
