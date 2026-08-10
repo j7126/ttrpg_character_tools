@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
-import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
 class CharacterInspirationField extends StatelessWidget {
