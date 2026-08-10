@@ -42,6 +42,7 @@ class Character extends $pb.GeneratedMessage {
     $5.CharacterSkills? skills,
     $core.Iterable<$6.CharacterClassInfo>? classInfo,
     $7.CharacterSpells? spells,
+    $core.int? inspiration,
   }) {
     final result = create();
     if (id != null) result.id = id;
@@ -58,6 +59,7 @@ class Character extends $pb.GeneratedMessage {
     if (skills != null) result.skills = skills;
     if (classInfo != null) result.classInfo.addAll(classInfo);
     if (spells != null) result.spells = spells;
+    if (inspiration != null) result.inspiration = inspiration;
     return result;
   }
 
@@ -97,6 +99,7 @@ class Character extends $pb.GeneratedMessage {
         protoName: 'classInfo', subBuilder: $6.CharacterClassInfo.create)
     ..aOM<$7.CharacterSpells>(18, _omitFieldNames ? '' : 'spells',
         subBuilder: $7.CharacterSpells.create)
+    ..aI(19, _omitFieldNames ? '' : 'inspiration')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -250,6 +253,15 @@ class Character extends $pb.GeneratedMessage {
   void clearSpells() => $_clearField(18);
   @$pb.TagNumber(18)
   $7.CharacterSpells ensureSpells() => $_ensure(13);
+
+  @$pb.TagNumber(19)
+  $core.int get inspiration => $_getIZ(14);
+  @$pb.TagNumber(19)
+  set inspiration($core.int value) => $_setSignedInt32(14, value);
+  @$pb.TagNumber(19)
+  $core.bool hasInspiration() => $_has(14);
+  @$pb.TagNumber(19)
+  void clearInspiration() => $_clearField(19);
 }
 
 const $core.bool _omitFieldNames =

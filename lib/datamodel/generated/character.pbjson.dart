@@ -89,9 +89,19 @@ const Character$json = {
       '6': '.ttrpg_character_tools.CharacterSpells',
       '10': 'spells'
     },
+    {
+      '1': 'inspiration',
+      '3': 19,
+      '4': 1,
+      '5': 5,
+      '9': 1,
+      '10': 'inspiration',
+      '17': true
+    },
   ],
   '8': [
     {'1': '_xp'},
+    {'1': '_inspiration'},
   ],
 };
 
@@ -109,4 +119,5 @@ final $typed_data.Uint8List characterDescriptor = $convert.base64Decode(
     'Rlcl90b29scy5DaGFyYWN0ZXJTa2lsbHNSBnNraWxscxJHCgljbGFzc0luZm8YESADKAsyKS50'
     'dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyQ2xhc3NJbmZvUgljbGFzc0luZm8SPgoGc3'
     'BlbGxzGBIgASgLMiYudHRycGdfY2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclNwZWxsc1IGc3Bl'
-    'bGxzQgUKA194cA==');
+    'bGxzEiUKC2luc3BpcmF0aW9uGBMgASgFSAFSC2luc3BpcmF0aW9uiAEBQgUKA194cEIOCgxfaW'
+    '5zcGlyYXRpb24=');

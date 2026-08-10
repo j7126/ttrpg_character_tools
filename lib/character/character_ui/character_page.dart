@@ -5,6 +5,7 @@ import 'package:ttrpg_character_tools/character/character_manager.dart';
 import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
 import 'package:ttrpg_character_tools/character/character_ui/features_and_traits_section/character_features.dart';
 import 'package:ttrpg_character_tools/character/character_ui/life_section/character_life.dart';
+import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_inspiration_field.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_proficiency_field.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_saves.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_skills.dart';
@@ -96,10 +97,22 @@ class _CharacterPageState extends State<CharacterPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // profficency bonus
-                        CharacterProficiencyField(
-                          character: character,
-                          changed: changed,
+                        // proficiency bonus
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CharacterInspirationField(
+                                character: character,
+                                changed: changed,
+                              ),
+                            ),
+                            Expanded(
+                              child: CharacterProficiencyField(
+                                character: character,
+                                changed: changed,
+                              ),
+                            ),
+                          ],
                         ),
                         // saving throws
                         CharacterSavesWidget(

@@ -25,4 +25,5 @@ message Character {
   CharacterSkills skills = 15;
   repeated CharacterClassInfo classInfo = 17;
   CharacterSpells spells = 18;
+  optional int32 inspiration = 19;
 }

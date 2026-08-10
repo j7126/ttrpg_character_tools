@@ -3,8 +3,8 @@ import 'package:ttrpg_character_tools/character/character_ui/base_field/int_fiel
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
-class CharacterProficiencyField extends StatelessWidget {
-  const CharacterProficiencyField({
+class CharacterInspirationField extends StatelessWidget {
+  const CharacterInspirationField({
     super.key,
     required this.character,
     required this.changed,
@@ -18,17 +18,15 @@ class CharacterProficiencyField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: IntFieldBase(
-        label: "Proficiency",
-        withSign: true,
-        value: character.proficiencyBonus,
+        label: "Inspiration",
+        withSign: false,
+        value: character.hasInspiration() ? character.inspiration : 0,
         valueChanged: (val) {
-          character.stats.overrideProficencyBonus = val;
-          changed();
-        },
-        isCalculated: true,
-        isOverridden: character.stats.hasOverrideProficencyBonus(),
-        resetValue: () async {
-          character.stats.clearOverrideProficencyBonus();
+          if (val == 0) {
+            character.clearInspiration();
+          } else {
+            character.inspiration = val;
+          }
           changed();
         },
       ),
