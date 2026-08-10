@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:ttrpg_character_tools/about/about_page.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/navigation/nav_bar.dart';
 import 'package:ttrpg_character_tools/navigation/nav_menu.dart';
@@ -46,7 +48,25 @@ class _PageScaffoldState extends State<PageScaffold> {
                 )
               : null,
           centerTitle: true,
-          actions: widget.appBarActions,
+          actions: [
+            ...(widget.appBarActions ?? []),
+            Gap(8.0),
+            PopupMenuButton(
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem(
+                  child: const Text('About'),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const AboutPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            Gap(16.0),
+          ],
         ),
         bottomNavigationBar: NavBar.fromAdaptiveInfo(widget.adaptiveInfo),
         drawer: widget.adaptiveInfo.isLandscape && !widget.adaptiveInfo.isLarge

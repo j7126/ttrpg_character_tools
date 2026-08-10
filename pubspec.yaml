@@ -38,6 +38,7 @@ dependencies:
     git:
       url: https://github.com/j7126/flutter_xattr
       ref: 17900bbe502ad6e4370ffc69089c8606c33c8fde
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +47,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.4.11
   json_serializable: ^6.8.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -54,3 +56,20 @@ flutter:
     - data/class/
     - data/spells/
     - data/
+    - assets/icon/icon.svg
+  
+  fonts:
+    - family:  CustomIcons
+      fonts:
+       - asset: fonts/CustomIcons.ttf
+
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  windows:
+    generate: true
+    icon_size: 256
+  macos:
+    generate: true
+  android: false
+  ios: false
+  

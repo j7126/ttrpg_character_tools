@@ -162,7 +162,6 @@ class _CharactersPageState extends State<CharactersPage> {
             children: [Icon(Icons.file_open), Text("Open Character")],
           ),
         ),
-        Gap(16.0),
       ],
       body: Padding(
         padding: const EdgeInsets.all(8.0),
