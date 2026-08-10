@@ -9,7 +9,7 @@ class DiceFieldBase extends StatefulWidget {
     super.key,
     required this.label,
     required this.value,
-    required this.valueChanged,
+    this.valueChanged,
     this.inputBorder,
     this.showLabel,
     this.isDense = false,
@@ -24,7 +24,7 @@ class DiceFieldBase extends StatefulWidget {
 
   final String label;
   final Iterable<Dice> value;
-  final Function(Iterable<Dice> val) valueChanged;
+  final Function(Iterable<Dice> val)? valueChanged;
   final InputBorder? inputBorder;
   final bool? showLabel;
   final bool isDense;
@@ -49,11 +49,9 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
   bool showingConfirmOverrideDialog = false;
 
   void _valueChanged() async {
-    if (showingConfirmOverrideDialog) {
-      return;
-    }
-
-    if (textValue == controller.text) {
+    if (widget.valueChanged == null ||
+        showingConfirmOverrideDialog ||
+        textValue == controller.text) {
       return;
     }
 
@@ -100,7 +98,7 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
 
     textValue = dice.toDiceString();
     controller.text = textValue;
-    widget.valueChanged(dice);
+    widget.valueChanged?.call(dice);
   }
 
   void _handleFocusChanged() {
@@ -153,6 +151,7 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      readOnly: widget.valueChanged == null,
       onEditingComplete: () {
         _effectiveFocusNode.unfocus();
         _valueChanged();

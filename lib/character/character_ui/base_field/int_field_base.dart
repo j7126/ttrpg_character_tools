@@ -8,7 +8,7 @@ class IntFieldBase extends StatefulWidget {
     super.key,
     required this.label,
     required this.value,
-    required this.valueChanged,
+    this.valueChanged,
     this.inputBorder,
     this.showLabel,
     this.isDense = false,
@@ -26,7 +26,7 @@ class IntFieldBase extends StatefulWidget {
 
   final String label;
   final int value;
-  final Function(int val) valueChanged;
+  final Function(int val)? valueChanged;
   final InputBorder? inputBorder;
   final bool? showLabel;
   final bool isDense;
@@ -62,7 +62,7 @@ class _IntFieldBaseState extends State<IntFieldBase> {
   }
 
   void _valueChanged() async {
-    if (showingConfirmOverrideDialog) {
+    if (widget.valueChanged == null || showingConfirmOverrideDialog) {
       return;
     }
 
@@ -119,7 +119,7 @@ class _IntFieldBaseState extends State<IntFieldBase> {
 
     intVal = value;
     _updateText();
-    widget.valueChanged(intVal);
+    widget.valueChanged?.call(intVal);
   }
 
   void _handleFocusChanged() {
@@ -173,6 +173,7 @@ class _IntFieldBaseState extends State<IntFieldBase> {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      readOnly: widget.valueChanged == null,
       onEditingComplete: () {
         _effectiveFocusNode.unfocus();
         _valueChanged();

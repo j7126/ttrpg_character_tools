@@ -81,6 +81,14 @@ const Character$json = {
       '6': '.ttrpg_character_tools.CharacterClassInfo',
       '10': 'classInfo'
     },
+    {
+      '1': 'spells',
+      '3': 18,
+      '4': 1,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterSpells',
+      '10': 'spells'
+    },
   ],
   '8': [
     {'1': '_xp'},
@@ -99,5 +107,6 @@ final $typed_data.Uint8List characterDescriptor = $convert.base64Decode(
     'NoYXJhY3RlckxpZmVSBGxpZmUSOwoFc3RhdHMYDiABKAsyJS50dHJwZ19jaGFyYWN0ZXJfdG9v'
     'bHMuQ2hhcmFjdGVyU3RhdHNSBXN0YXRzEj4KBnNraWxscxgPIAEoCzImLnR0cnBnX2NoYXJhY3'
     'Rlcl90b29scy5DaGFyYWN0ZXJTa2lsbHNSBnNraWxscxJHCgljbGFzc0luZm8YESADKAsyKS50'
-    'dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyQ2xhc3NJbmZvUgljbGFzc0luZm9CBQoDX3'
-    'hw');
+    'dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyQ2xhc3NJbmZvUgljbGFzc0luZm8SPgoGc3'
+    'BlbGxzGBIgASgLMiYudHRycGdfY2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclNwZWxsc1IGc3Bl'
+    'bGxzQgUKA194cA==');

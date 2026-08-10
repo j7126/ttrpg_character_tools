@@ -7,6 +7,7 @@ import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_alignment.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_life.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_skills.pb.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character_spells.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/dice.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/options.pb.dart';
@@ -27,6 +28,9 @@ extension CharacterExtension on Character {
     }
     if (!hasSkills()) {
       skills = CharacterSkills();
+    }
+    if (!hasSpells()) {
+      spells = CharacterSpells();
     }
   }
 

@@ -20,6 +20,7 @@ import 'character_alignment.pb.dart' as $2;
 import 'character_class_info.pb.dart' as $6;
 import 'character_life.pb.dart' as $3;
 import 'character_skills.pb.dart' as $5;
+import 'character_spells.pb.dart' as $7;
 import 'character_stats.pb.dart' as $4;
 import 'options.pb.dart' as $1;
 
@@ -40,6 +41,7 @@ class Character extends $pb.GeneratedMessage {
     $4.CharacterStats? stats,
     $5.CharacterSkills? skills,
     $core.Iterable<$6.CharacterClassInfo>? classInfo,
+    $7.CharacterSpells? spells,
   }) {
     final result = create();
     if (id != null) result.id = id;
@@ -55,6 +57,7 @@ class Character extends $pb.GeneratedMessage {
     if (stats != null) result.stats = stats;
     if (skills != null) result.skills = skills;
     if (classInfo != null) result.classInfo.addAll(classInfo);
+    if (spells != null) result.spells = spells;
     return result;
   }
 
@@ -92,6 +95,8 @@ class Character extends $pb.GeneratedMessage {
         subBuilder: $5.CharacterSkills.create)
     ..pPM<$6.CharacterClassInfo>(17, _omitFieldNames ? '' : 'classInfo',
         protoName: 'classInfo', subBuilder: $6.CharacterClassInfo.create)
+    ..aOM<$7.CharacterSpells>(18, _omitFieldNames ? '' : 'spells',
+        subBuilder: $7.CharacterSpells.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -234,6 +239,17 @@ class Character extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(17)
   $pb.PbList<$6.CharacterClassInfo> get classInfo => $_getList(12);
+
+  @$pb.TagNumber(18)
+  $7.CharacterSpells get spells => $_getN(13);
+  @$pb.TagNumber(18)
+  set spells($7.CharacterSpells value) => $_setField(18, value);
+  @$pb.TagNumber(18)
+  $core.bool hasSpells() => $_has(13);
+  @$pb.TagNumber(18)
+  void clearSpells() => $_clearField(18);
+  @$pb.TagNumber(18)
+  $7.CharacterSpells ensureSpells() => $_ensure(13);
 }
 
 const $core.bool _omitFieldNames =

@@ -6,7 +6,7 @@ class TextFieldBase extends StatefulWidget {
     super.key,
     required this.label,
     required this.value,
-    required this.valueChanged,
+    this.valueChanged,
     this.inputBorder,
     this.showLabel,
     this.isDense = false,
@@ -21,7 +21,7 @@ class TextFieldBase extends StatefulWidget {
 
   final String label;
   final String value;
-  final Function(String val) valueChanged;
+  final Function(String val)? valueChanged;
   final InputBorder? inputBorder;
   final bool? showLabel;
   final bool isDense;
@@ -46,11 +46,9 @@ class _TextFieldBaseState extends State<TextFieldBase> {
   bool showingConfirmOverrideDialog = false;
 
   void _valueChanged() async {
-    if (showingConfirmOverrideDialog) {
-      return;
-    }
-
-    if (textValue == controller.text) {
+    if (widget.valueChanged == null ||
+        showingConfirmOverrideDialog ||
+        textValue == controller.text) {
       return;
     }
 
@@ -94,7 +92,7 @@ class _TextFieldBaseState extends State<TextFieldBase> {
     }
 
     textValue = controller.text;
-    widget.valueChanged(textValue);
+    widget.valueChanged?.call(textValue);
   }
 
   void _handleFocusChanged() {
@@ -146,6 +144,7 @@ class _TextFieldBaseState extends State<TextFieldBase> {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      readOnly: widget.valueChanged == null,
       onEditingComplete: () {
         _effectiveFocusNode.unfocus();
         _valueChanged();

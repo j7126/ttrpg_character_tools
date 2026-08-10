@@ -1,3 +1,4 @@
+import 'package:render_ttrpg_data/datamodel/5e/data/ability.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 
 extension StatsTypeExtension on StatsType {
@@ -24,4 +25,26 @@ extension StatsTypeExtension on StatsType {
       _ => "",
     };
   }
+
+  Ability toAbility() => switch (this) {
+    StatsType.Strength => Ability.str,
+    StatsType.Dexterity => Ability.dex,
+    StatsType.Constitution => Ability.con,
+    StatsType.Intelligence => Ability.int,
+    StatsType.Wisdom => Ability.wis,
+    StatsType.Charisma => Ability.cha,
+    _ => Ability.values.first,
+  };
+}
+
+extension AbilityStatsTypeExtension on Ability {
+  StatsType toStatsType() => switch (this) {
+    Ability.str => StatsType.Strength,
+    Ability.dex => StatsType.Dexterity,
+    Ability.con => StatsType.Constitution,
+    Ability.int => StatsType.Intelligence,
+    Ability.wis => StatsType.Wisdom,
+    Ability.cha => StatsType.Charisma,
+    _ => StatsType.values.first,
+  };
 }

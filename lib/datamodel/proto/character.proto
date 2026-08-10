@@ -7,6 +7,7 @@ import "character_skills.proto";
 import "character_life.proto";
 import "character_alignment.proto";
 import "character_class_info.proto";
+import "character_spells.proto";
 import "google/protobuf/timestamp.proto";
 
 message Character {
@@ -23,4 +24,5 @@ message Character {
   CharacterStats stats = 14;
   CharacterSkills skills = 15;
   repeated CharacterClassInfo classInfo = 17;
+  CharacterSpells spells = 18;
 }

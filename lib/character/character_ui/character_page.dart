@@ -8,6 +8,7 @@ import 'package:ttrpg_character_tools/character/character_ui/life_section/charac
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_proficiency_field.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_saves.dart';
 import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_skills.dart';
+import 'package:ttrpg_character_tools/character/character_ui/spells_section/character_spells.dart';
 import 'package:ttrpg_character_tools/character/character_ui/stats_section/character_stats.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
@@ -129,6 +130,7 @@ class _CharacterPageState extends State<CharacterPage> {
                   ),
                 ],
               ),
+              CharacterSpells(character: character, changed: changed),
             ],
           ),
         ),

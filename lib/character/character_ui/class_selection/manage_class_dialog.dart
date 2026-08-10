@@ -106,6 +106,8 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
   @override
   void dispose() {
     DataLoader.readyNotifier.removeListener(_dataLoaderReadyListener);
+    classSearchController.dispose();
+    subClassSearchController.dispose();
     super.dispose();
   }
 

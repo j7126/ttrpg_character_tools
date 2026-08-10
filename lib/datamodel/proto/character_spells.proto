@@ -6,4 +6,5 @@ import "character_spell_info.proto";
 message CharacterSpells {
   repeated CharacterSpellInfo knownSpells = 1;
   repeated CharacterSpellInfo preparedSpells = 2;
+  repeated CharacterSpellInfo knownCantrips = 3;
 }
