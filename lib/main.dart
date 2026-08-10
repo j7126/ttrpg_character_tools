@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
@@ -11,6 +13,7 @@ import 'package:ttrpg_character_tools/pages/races_page.dart';
 import 'package:ttrpg_character_tools/pages/spells_page.dart';
 import 'package:ttrpg_character_tools/service/settings.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:xdg_desktop_portal/xdg_desktop_portal.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +31,41 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  Color? overrideAcentColor;
+
+  void getAccentColor() async {
+    if (Platform.isLinux) {
+      try {
+        var client = XdgDesktopPortalClient();
+        var result = await client.settings.read(
+          "org.freedesktop.appearance",
+          "accent-color",
+        );
+        var vals = List.from(
+          result.asVariant().asStruct().map((x) => x.asDouble()),
+        );
+        if (vals.length == 3 && !vals.any((x) => x < 0 || x > 1)) {
+          var color = Color.fromARGB(
+            255,
+            (255 * vals[0]).floor(),
+            (255 * vals[1]).floor(),
+            (255 * vals[2]).floor(),
+          );
+          if (mounted) {
+            setState(() {
+              overrideAcentColor = color;
+            });
+          }
+        }
+      } catch (exception) {
+        overrideAcentColor = null;
+      }
+    }
+  }
+
   @override
   void initState() {
+    getAccentColor();
     CharacterManager.instance = CharacterManager();
     super.initState();
   }
@@ -38,6 +74,16 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        if (overrideAcentColor != null) {
+          lightDynamic = ColorScheme.fromSeed(
+            seedColor: overrideAcentColor!,
+            brightness: Brightness.light,
+          );
+          darkDynamic = ColorScheme.fromSeed(
+            seedColor: overrideAcentColor!,
+            brightness: Brightness.dark,
+          );
+        }
         return MaterialApp(
           title: "Character Manager",
           themeMode: ThemeMode.system,

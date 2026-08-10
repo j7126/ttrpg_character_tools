@@ -33,6 +33,7 @@ dependencies:
   macos_secure_bookmarks: ^0.2.1
   window_manager: ^0.5.1
   fixnum: ^1.1.1
+  xdg_desktop_portal: ^0.1.14
 
 dev_dependencies:
   flutter_test:
