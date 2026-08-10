@@ -45,6 +45,5 @@ extension AbilityStatsTypeExtension on Ability {
     Ability.int => StatsType.Intelligence,
     Ability.wis => StatsType.Wisdom,
     Ability.cha => StatsType.Charisma,
-    _ => StatsType.values.first,
   };
 }
