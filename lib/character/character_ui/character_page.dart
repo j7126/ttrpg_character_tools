@@ -75,79 +75,124 @@ class _CharacterPageState extends State<CharacterPage> {
       );
     }
 
+    Widget tabContent(_CharacterPageTabs tab) => switch (tab) {
+      _CharacterPageTabs.info => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // character stats
+          CharacterStatsWidget(character: character, changed: changed),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // character skills section
+              Container(
+                constraints: BoxConstraints(maxWidth: 280.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // proficiency bonus
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CharacterInspirationField(
+                            character: character,
+                            changed: changed,
+                          ),
+                        ),
+                        Expanded(
+                          child: CharacterProficiencyField(
+                            character: character,
+                            changed: changed,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // saving throws
+                    CharacterSavesWidget(
+                      character: character,
+                      changed: changed,
+                    ),
+                    // skills
+                    CharacterSkillsWidget(
+                      character: character,
+                      changed: changed,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    CharacterLifeWidget(character: character, changed: changed),
+                    CharacterFeatures(character: character, changed: changed),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      _CharacterPageTabs.spells => CharacterSpells(
+        character: character,
+        changed: changed,
+      ),
+      _ => Container(),
+    };
+
     return PageScaffold(
       adaptiveInfo: adaptiveInfo,
       title: character.name.isEmpty ? "Character" : character.name,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // character info
-              CharacterInfoWidget(character: character, changed: changed),
-              // character stats
-              CharacterStatsWidget(character: character, changed: changed),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: DefaultTabController(
+        length: _CharacterPageTabs.values.length,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            // character info
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 8.0,
+              ),
+              child: CharacterInfoWidget(
+                character: character,
+                changed: changed,
+              ),
+            ),
+            TabBar(
+              tabs: [
+                for (var tab in _CharacterPageTabs.values)
+                  Tab(child: Text(tab.name)),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
                 children: [
-                  // character skills section
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 280.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // proficiency bonus
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CharacterInspirationField(
-                                character: character,
-                                changed: changed,
-                              ),
-                            ),
-                            Expanded(
-                              child: CharacterProficiencyField(
-                                character: character,
-                                changed: changed,
-                              ),
-                            ),
-                          ],
+                  for (var tab in _CharacterPageTabs.values)
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12.0,
+                          vertical: 8.0,
                         ),
-                        // saving throws
-                        CharacterSavesWidget(
-                          character: character,
-                          changed: changed,
-                        ),
-                        // skills
-                        CharacterSkillsWidget(
-                          character: character,
-                          changed: changed,
-                        ),
-                      ],
+                        child: tabContent(tab),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        CharacterLifeWidget(
-                          character: character,
-                          changed: changed,
-                        ),
-                        CharacterFeatures(
-                          character: character,
-                          changed: changed,
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
-              CharacterSpells(character: character, changed: changed),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+}
+
+enum _CharacterPageTabs {
+  info("Stats & Info"),
+  spells("Spells"),
+  items("Items & Equipment");
+
+  final String name;
+
+  const _CharacterPageTabs(this.name);
 }
