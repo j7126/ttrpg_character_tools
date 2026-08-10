@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
+import 'package:ttrpg_character_tools/character/character_ui/base_field/text_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
 import 'package:ttrpg_character_tools/character/character_ui/features_and_traits_section/character_features.dart';
 import 'package:ttrpg_character_tools/character/character_ui/life_section/character_life.dart';
@@ -142,6 +143,24 @@ class _CharacterPageState extends State<CharacterPage> {
     return PageScaffold(
       adaptiveInfo: adaptiveInfo,
       title: character.name.isEmpty ? "Character" : character.name,
+      titleWidget: Builder(
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFieldBase(
+              label: "Name",
+              inputBorder: InputBorder.none,
+              textAlign: TextAlign.center,
+              textStyle: DefaultTextStyle.of(context).style,
+              value: character.name,
+              valueChanged: (val) {
+                character.name = val;
+                changed();
+              },
+            ),
+          );
+        }
+      ),
       body: DefaultTabController(
         length: _CharacterPageTabs.values.length,
         child: Column(

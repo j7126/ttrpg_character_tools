@@ -21,60 +21,39 @@ class CharacterInfoWidget extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          flex: 1,
+          child: ClassField(character: character, changed: changed),
+        ),
+        Expanded(
+          child: RaceField(character: character, changed: changed),
+        ),
+        Expanded(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFieldBase(
-              label: "Name",
-              value: character.name,
+              label: "Background",
+              value: character.background,
               valueChanged: (val) {
-                character.name = val;
+                character.background = val;
                 changed();
               },
             ),
           ),
         ),
-        Expanded(
-          flex: 2,
-          child: Row(
-            children: [
-              Expanded(
-                child: ClassField(character: character, changed: changed),
+        if (character.options.hasLevelingMethod() &&
+            character.options.levelingMethod == LevelingMethod.XP)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IntFieldBase(
+                label: "Experience Points",
+                value: character.xp,
+                valueChanged: (val) {
+                  character.xp = val;
+                  changed();
+                },
               ),
-              Expanded(
-                child: RaceField(character: character, changed: changed),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFieldBase(
-                    label: "Background",
-                    value: character.background,
-                    valueChanged: (val) {
-                      character.background = val;
-                      changed();
-                    },
-                  ),
-                ),
-              ),
-              if (character.options.hasLevelingMethod() &&
-                  character.options.levelingMethod == LevelingMethod.XP)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IntFieldBase(
-                      label: "Experience Points",
-                      value: character.xp,
-                      valueChanged: (val) {
-                        character.xp = val;
-                        changed();
-                      },
-                    ),
-                  ),
-                ),
-            ],
+            ),
           ),
-        ),
       ],
     );
   }
