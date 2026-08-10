@@ -20,10 +20,12 @@ class CharacterFile extends $pb.GeneratedMessage {
   factory CharacterFile({
     $core.String? path,
     $core.String? macosBookmark,
+    $core.String? displayPath,
   }) {
     final result = create();
     if (path != null) result.path = path;
     if (macosBookmark != null) result.macosBookmark = macosBookmark;
+    if (displayPath != null) result.displayPath = displayPath;
     return result;
   }
 
@@ -43,6 +45,7 @@ class CharacterFile extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'path')
     ..aOS(2, _omitFieldNames ? '' : 'macosBookmark', protoName: 'macosBookmark')
+    ..aOS(3, _omitFieldNames ? '' : 'displayPath', protoName: 'displayPath')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -81,6 +84,15 @@ class CharacterFile extends $pb.GeneratedMessage {
   $core.bool hasMacosBookmark() => $_has(1);
   @$pb.TagNumber(2)
   void clearMacosBookmark() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get displayPath => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set displayPath($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasDisplayPath() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearDisplayPath() => $_clearField(3);
 }
 
 const $core.bool _omitFieldNames =

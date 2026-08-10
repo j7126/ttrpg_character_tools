@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter_xattr/flutter_xattr.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/timestamp_extension.dart';
 import 'package:ttrpg_character_tools/character/file_format.dart';
@@ -11,6 +12,7 @@ import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_file.pb.dart';
 import 'package:uuid/uuid.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:xdg_desktop_portal/xdg_desktop_portal.dart';
 import 'package:xxh3/xxh3.dart';
 
 class CharacterManager {
@@ -58,11 +60,35 @@ class CharacterManager {
   Future<CharacterFile?> createCharacter() async {
     closeCharacter();
 
-    String? filePath = await FilePicker.platform.saveFile(
-      dialogTitle: 'Create New Character',
-      type: FileType.custom,
-      allowedExtensions: [characterFileExtension],
-    );
+    String? filePath;
+    if (Platform.isLinux) {
+      try {
+        var client = XdgDesktopPortalClient();
+        var result = await client.fileChooser
+            .saveFile(
+              title: 'Create New Character',
+              filters: [
+                XdgFileChooserFilter('Character File', [
+                  XdgFileChooserGlobPattern('*.$characterFileExtension'),
+                ]),
+              ],
+            )
+            .first;
+        filePath = result.uris.firstOrNull;
+        if (filePath != null) {
+          filePath = Uri.parse(filePath).toFilePath();
+        }
+        await client.close();
+      } on XdgPortalRequestCancelledException {
+        filePath = null;
+      }
+    } else {
+      filePath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Create New Character',
+        type: FileType.custom,
+        allowedExtensions: [characterFileExtension],
+      );
+    }
 
     if (filePath == null) {
       return null;
@@ -91,16 +117,41 @@ class CharacterManager {
   }
 
   Future<CharacterFile?> openCharacter({CharacterFile? characterFile}) async {
-    closeCharacter();
+    await closeCharacter();
 
     if (characterFile == null) {
-      var result = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.custom,
-        allowedExtensions: [characterFileExtension],
-      );
-      if (result != null && result.files.length == 1) {
-        characterFile = CharacterFile(path: result.files.single.path);
+      if (Platform.isLinux) {
+        try {
+          var client = XdgDesktopPortalClient();
+          var result = await client.fileChooser
+              .openFile(
+                title: "Open Character",
+                filters: [
+                  XdgFileChooserFilter('Character File', [
+                    XdgFileChooserGlobPattern('*.$characterFileExtension'),
+                  ]),
+                ],
+              )
+              .first;
+          var filePath = result.uris.firstOrNull;
+          if (filePath != null) {
+            filePath = Uri.parse(filePath).toFilePath();
+            characterFile = CharacterFile(path: filePath);
+          }
+          await client.close();
+        } on XdgPortalRequestCancelledException {
+          characterFile = null;
+        }
+      } else {
+        var result = await FilePicker.platform.pickFiles(
+          dialogTitle: "Open Character",
+          allowMultiple: false,
+          type: FileType.custom,
+          allowedExtensions: [characterFileExtension],
+        );
+        if (result != null && result.files.length == 1) {
+          characterFile = CharacterFile(path: result.files.single.path);
+        }
       }
     }
     if (characterFile != null) {
@@ -118,6 +169,20 @@ class CharacterManager {
           file = File(characterFile.path);
           characterFile.macosBookmark = await SecureBookmarks().bookmark(file);
         }
+      } else if (Platform.isLinux) {
+        String hostPath;
+        try {
+          hostPath = Xattr.getFileAttribute(
+            characterFile.path,
+            "user.document-portal.host-path",
+          );
+        } catch (_) {
+          hostPath = "";
+        }
+        if (hostPath.isNotEmpty) {
+          characterFile.displayPath = hostPath;
+        }
+        file = File(characterFile.path);
       } else {
         file = File(characterFile.path);
       }

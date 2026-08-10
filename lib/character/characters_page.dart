@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_xattr/flutter_xattr.dart';
 import 'package:gap/gap.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
 import 'package:path/path.dart' as p;
@@ -41,6 +42,20 @@ class _CharactersPageState extends State<CharactersPage> {
           continue;
         }
         await SecureBookmarks().startAccessingSecurityScopedResource(file);
+      } else if (Platform.isLinux) {
+        String hostPath;
+        try {
+          hostPath = Xattr.getFileAttribute(
+            recentFile.path,
+            "user.document-portal.host-path",
+          );
+        } catch (_) {
+          hostPath = "";
+        }
+        if (hostPath.isNotEmpty) {
+          recentFile.displayPath = hostPath;
+        }
+        file = File(recentFile.path);
       } else {
         file = File(recentFile.path);
       }
@@ -183,7 +198,10 @@ class _CharactersPageState extends State<CharactersPage> {
                                           ).titleLarge,
                                         ),
                                         Text(
-                                          file.path,
+                                          file.hasDisplayPath() &&
+                                                  file.displayPath.isNotEmpty
+                                              ? file.displayPath
+                                              : file.path,
                                           style: TextTheme.of(context).bodySmall
                                               ?.copyWith(
                                                 color: ColorScheme.of(

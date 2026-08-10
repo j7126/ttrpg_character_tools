@@ -1,11 +1,11 @@
 name: ttrpg_character_tools
 description: "A simple ttrpg character manager."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '^3.10.7'
+  sdk: "^3.10.7"
 
 dependencies:
   flutter:
@@ -34,6 +34,10 @@ dependencies:
   window_manager: ^0.5.1
   fixnum: ^1.1.1
   xdg_desktop_portal: ^0.1.14
+  flutter_xattr:
+    git:
+      url: https://github.com/j7126/flutter_xattr
+      ref: 17900bbe502ad6e4370ffc69089c8606c33c8fde
 
 dev_dependencies:
   flutter_test:
