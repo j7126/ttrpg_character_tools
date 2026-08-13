@@ -1,7 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_class_info.pb.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 
 class ClassSpellcastingInfo {
   ClassSpellcastingInfo({
@@ -9,24 +13,32 @@ class ClassSpellcastingInfo {
     required this.class5e,
     required this.spellSlots,
     required this.spellsKnown,
+    required this.preparedSpells,
     required this.cantripsKnown,
     required this.highestSpellLevel,
+    required this.magicType,
   });
 
   final CharacterClassInfo classInfo;
   final Class5e class5e;
   final Map<int, int> spellSlots;
   final int spellsKnown;
+  final int? preparedSpells;
   final int cantripsKnown;
   final int highestSpellLevel;
+  final String magicType;
 
-  static ClassSpellcastingInfo? getClassInfo(CharacterClassInfo info) {
+  static ClassSpellcastingInfo? getClassInfo(
+    Character character,
+    CharacterClassInfo info,
+  ) {
     var class5e = info.getClass();
     if (class5e == null) {
       return null;
     }
 
     Map<int, int> spellSlots = {};
+    String? magicType;
     if (class5e.classTableGroups != null) {
       var spellProgressionEntry = class5e.classTableGroups!
           .firstWhereOrNull((x) => x.rowsSpellProgression != null)
@@ -46,6 +58,7 @@ class ClassSpellcastingInfo {
         for (var i = 1; i <= spellSlotsList.length; i++) {
           spellSlots[i] = spellSlotsList[i - 1];
         }
+        magicType = "spellcasting";
       } else if (warlockEntry != null) {
         var levelColIndex = warlockEntry.colLabels!.indexOf("Slot Level");
         var slotsColIndex = warlockEntry.colLabels!.indexOf("Spell Slots");
@@ -64,6 +77,7 @@ class ClassSpellcastingInfo {
               : null;
           if (slots != null && slotLevel != null) {
             spellSlots[slotLevel] = slots;
+            magicType = "pact";
           }
         }
       }
@@ -81,6 +95,7 @@ class ClassSpellcastingInfo {
                 ? class5e.spellsKnownProgression!.last
                 : class5e.spellsKnownProgression![info.classLevel - 1]
           : 0,
+      preparedSpells: computePreparedSpells(character, info),
       cantripsKnown: (class5e.cantripProgression?.isNotEmpty ?? false)
           ? info.classLevel - 1 > class5e.cantripProgression!.length
                 ? class5e.cantripProgression!.last
@@ -88,6 +103,63 @@ class ClassSpellcastingInfo {
           : 0,
       highestSpellLevel:
           spellSlots.entries.lastWhereOrNull((x) => x.value > 0)?.key ?? 0,
+      magicType: magicType ?? "unknown",
     );
+  }
+
+  static int? computePreparedSpells(
+    Character character,
+    CharacterClassInfo classInfo,
+  ) {
+    var class5e = classInfo.getClass();
+    if (class5e?.preparedSpells == null) {
+      return null;
+    }
+
+    var vals = <String, int>{};
+    vals["level"] = classInfo.classLevel;
+    for (var stat in StatsType.values) {
+      vals["${stat.toAbility().toString().split('.').last}_mod"] = character
+          .stats
+          .getStatModifier(stat);
+    }
+
+    RegExp exp = RegExp(r'(?:(<\$)([^\$]+)\$>)|[\/+*-]|([0-9]+)');
+    var matches = exp.allMatches(class5e!.preparedSpells!);
+    var result = 0;
+    String? operator;
+
+    void applyNum(int num) {
+      switch (operator) {
+        case "-":
+          result -= num;
+        case "/":
+          result ~/= num;
+        case "*":
+          result *= num;
+        default:
+          result += num;
+      }
+    }
+
+    for (var match in matches) {
+      if (match.group(1) == "<\$") {
+        var val = vals[match.group(2)];
+        if (val == null) {
+          return 0;
+        }
+        applyNum(val);
+      } else if (match.group(3) != null) {
+        var val = int.tryParse(match.group(1)!);
+        if (val == null) {
+          return 0;
+        }
+        applyNum(val);
+      } else {
+        operator = match.group(0);
+      }
+    }
+
+    return result;
   }
 }

@@ -43,6 +43,14 @@ const CharacterSpells$json = {
       '6': '.ttrpg_character_tools.CharacterSpellInfo',
       '10': 'knownCantrips'
     },
+    {
+      '1': 'expendedSpellSlots',
+      '3': 4,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.ExpendedSpellSlots',
+      '10': 'expendedSpellSlots'
+    },
   ],
 };
 
@@ -52,4 +60,22 @@ final $typed_data.Uint8List characterSpellsDescriptor = $convert.base64Decode(
     'JfdG9vbHMuQ2hhcmFjdGVyU3BlbGxJbmZvUgtrbm93blNwZWxscxJRCg5wcmVwYXJlZFNwZWxs'
     'cxgCIAMoCzIpLnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0ZXJTcGVsbEluZm9SDnByZX'
     'BhcmVkU3BlbGxzEk8KDWtub3duQ2FudHJpcHMYAyADKAsyKS50dHJwZ19jaGFyYWN0ZXJfdG9v'
-    'bHMuQ2hhcmFjdGVyU3BlbGxJbmZvUg1rbm93bkNhbnRyaXBz');
+    'bHMuQ2hhcmFjdGVyU3BlbGxJbmZvUg1rbm93bkNhbnRyaXBzElkKEmV4cGVuZGVkU3BlbGxTbG'
+    '90cxgEIAMoCzIpLnR0cnBnX2NoYXJhY3Rlcl90b29scy5FeHBlbmRlZFNwZWxsU2xvdHNSEmV4'
+    'cGVuZGVkU3BlbGxTbG90cw==');
+
+@$core.Deprecated('Use expendedSpellSlotsDescriptor instead')
+const ExpendedSpellSlots$json = {
+  '1': 'ExpendedSpellSlots',
+  '2': [
+    {'1': 'slotSource', '3': 1, '4': 1, '5': 9, '10': 'slotSource'},
+    {'1': 'slotLevel', '3': 2, '4': 1, '5': 5, '10': 'slotLevel'},
+    {'1': 'numExpended', '3': 3, '4': 1, '5': 5, '10': 'numExpended'},
+  ],
+};
+
+/// Descriptor for `ExpendedSpellSlots`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List expendedSpellSlotsDescriptor = $convert.base64Decode(
+    'ChJFeHBlbmRlZFNwZWxsU2xvdHMSHgoKc2xvdFNvdXJjZRgBIAEoCVIKc2xvdFNvdXJjZRIcCg'
+    'lzbG90TGV2ZWwYAiABKAVSCXNsb3RMZXZlbBIgCgtudW1FeHBlbmRlZBgDIAEoBVILbnVtRXhw'
+    'ZW5kZWQ=');

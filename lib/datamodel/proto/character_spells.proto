@@ -7,4 +7,11 @@ message CharacterSpells {
   repeated CharacterSpellInfo knownSpells = 1;
   repeated CharacterSpellInfo preparedSpells = 2;
   repeated CharacterSpellInfo knownCantrips = 3;
+  repeated ExpendedSpellSlots expendedSpellSlots = 4;
+}
+
+message ExpendedSpellSlots {
+  string slotSource = 1;
+  int32 slotLevel = 2;
+  int32 numExpended = 3;
 }
