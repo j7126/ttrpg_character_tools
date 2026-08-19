@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/field_reset_button.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/field_reset_button.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_skills.pb.dart';
 
 class CharacterSkillsWidget extends StatelessWidget {
-  const CharacterSkillsWidget({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
-
-  final Character character;
-  final Function() changed;
+  const CharacterSkillsWidget({super.key});
 
   static const List<CharacterSkill> skills = [
     CharacterSkill.Acrobatics,
@@ -40,6 +33,8 @@ class CharacterSkillsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InputDecorator(
@@ -58,20 +53,25 @@ class CharacterSkillsWidget extends StatelessWidget {
                 children: [
                   Checkbox(
                     activeColor:
-                        character.skills.proficencyCalculated.contains(skill)
+                        characterContext.character.skills.proficencyCalculated
+                            .contains(skill)
                         ? null
                         : ColorScheme.of(context).tertiary,
-                    value: character.isProficient(skill),
+                    value: characterContext.character.isProficient(skill),
                     onChanged:
-                        !character.isProficient(skill) ||
-                            character.skills.proficency.contains(skill)
+                        !characterContext.character.isProficient(skill) ||
+                            characterContext.character.skills.proficency
+                                .contains(skill)
                         ? (value) {
                             if (value == true) {
-                              character.skills.proficency.add(skill);
+                              characterContext.character.skills.proficency.add(
+                                skill,
+                              );
                             } else {
-                              character.skills.proficency.remove(skill);
+                              characterContext.character.skills.proficency
+                                  .remove(skill);
                             }
-                            changed();
+                            characterContext.changed();
                           }
                         : null,
                   ),
@@ -84,26 +84,31 @@ class CharacterSkillsWidget extends StatelessWidget {
                       withSign: true,
                       inputBorder: UnderlineInputBorder(),
                       textStyle: TextStyle(fontSize: 14),
-                      value: character.getSkillModifier(skill),
+                      value: characterContext.character.getSkillModifier(skill),
                       valueChanged: (val) {
-                        character.skills.overrides[skill.value] = val;
-                        changed();
+                        characterContext.character.skills.overrides[skill
+                                .value] =
+                            val;
+                        characterContext.changed();
                       },
                       isCalculated: true,
                       hideResetButton: true,
-                      isOverridden: character.skills.overrides.containsKey(
-                        skill.value,
-                      ),
+                      isOverridden: characterContext.character.skills.overrides
+                          .containsKey(skill.value),
                     ),
                   ),
                   Text(skill.name),
                   Text(" (${skill.associatedStat.shortName})"),
                   Spacer(),
-                  if (character.skills.overrides.containsKey(skill.value))
+                  if (characterContext.character.skills.overrides.containsKey(
+                    skill.value,
+                  ))
                     FieldResetButton(
                       resetValue: () {
-                        character.skills.overrides.remove(skill.value);
-                        changed();
+                        characterContext.character.skills.overrides.remove(
+                          skill.value,
+                        );
+                        characterContext.changed();
                       },
                     ),
                 ],

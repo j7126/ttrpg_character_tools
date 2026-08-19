@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/text_field_base.dart';
-import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
-import 'package:ttrpg_character_tools/character/character_ui/features_and_traits_section/character_features.dart';
-import 'package:ttrpg_character_tools/character/character_ui/life_section/character_life.dart';
-import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_inspiration_field.dart';
-import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_proficiency_field.dart';
-import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_saves.dart';
-import 'package:ttrpg_character_tools/character/character_ui/skills_section/character_skills.dart';
-import 'package:ttrpg_character_tools/character/character_ui/spells_section/character_spells.dart';
-import 'package:ttrpg_character_tools/character/character_ui/stats_section/character_stats.dart';
+import 'package:ttrpg_character_tools/character/character_ui/build_character/character_build_ui.dart';
+import 'package:ttrpg_character_tools/character/character_ui/build_character/character_choice.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/character_play_ui.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
 
 class CharacterPage extends StatefulWidget {
@@ -23,15 +20,30 @@ class CharacterPage extends StatefulWidget {
 }
 
 class _CharacterPageState extends State<CharacterPage> {
+  bool isPlayMode = false;
+  Character? currentCharacter;
+  List<CharacterChoice> characterChoices = [];
+
   void changed() {
     setState(() {
       CharacterManager.instance.saveCharacter();
     });
   }
 
+  void rebuildChoices() {
+    if (currentCharacter == null) {
+      return;
+    }
+    setState(() {
+      characterChoices = CharacterChoice.getChoices(currentCharacter!);
+    });
+  }
+
   void _dataLoaderReadyListener() {
     if (mounted) {
-      setState(() {});
+      setState(() {
+        rebuildChoices();
+      });
     }
   }
 
@@ -50,11 +62,10 @@ class _CharacterPageState extends State<CharacterPage> {
 
   @override
   Widget build(BuildContext context) {
-    var character = CharacterManager.instance.character;
-
     var adaptiveInfo = AdaptiveInfo.of(context);
 
-    if (!CharacterManager.instance.isOpen || character == null) {
+    if (!CharacterManager.instance.isOpen ||
+        CharacterManager.instance.character == null) {
       return PageScaffold(
         adaptiveInfo: adaptiveInfo,
         title: "Character",
@@ -76,142 +87,71 @@ class _CharacterPageState extends State<CharacterPage> {
       );
     }
 
-    Widget tabContent(_CharacterPageTabs tab) => switch (tab) {
-      _CharacterPageTabs.info => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // character stats
-          CharacterStatsWidget(character: character, changed: changed),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // character skills section
-              Container(
-                constraints: BoxConstraints(maxWidth: 280.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // proficiency bonus
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CharacterInspirationField(
-                            character: character,
-                            changed: changed,
-                          ),
-                        ),
-                        Expanded(
-                          child: CharacterProficiencyField(
-                            character: character,
-                            changed: changed,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // saving throws
-                    CharacterSavesWidget(
-                      character: character,
-                      changed: changed,
-                    ),
-                    // skills
-                    CharacterSkillsWidget(
-                      character: character,
-                      changed: changed,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    CharacterLifeWidget(character: character, changed: changed),
-                    CharacterFeatures(character: character, changed: changed),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      _CharacterPageTabs.spells => CharacterSpells(
-        character: character,
-        changed: changed,
-      ),
-      _ => Container(),
-    };
+    if (currentCharacter != CharacterManager.instance.character) {
+      currentCharacter = CharacterManager.instance.character;
+      isPlayMode = currentCharacter!.isValid;
+      rebuildChoices();
+    }
 
     return PageScaffold(
       adaptiveInfo: adaptiveInfo,
-      title: character.name.isEmpty ? "Character" : character.name,
+      title: currentCharacter!.name.isEmpty
+          ? "Character"
+          : currentCharacter!.name,
       titleWidget: Builder(
         builder: (context) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFieldBase(
-              label: "Name",
-              inputBorder: InputBorder.none,
-              textAlign: TextAlign.center,
-              textStyle: DefaultTextStyle.of(context).style,
-              value: character.name,
-              valueChanged: (val) {
-                character.name = val;
-                changed();
-              },
-            ),
+          return Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFieldBase(
+                    label: "Name",
+                    inputBorder: InputBorder.none,
+                    textAlign: TextAlign.center,
+                    textStyle: DefaultTextStyle.of(context).style,
+                    value: currentCharacter!.name,
+                    valueChanged: (val) {
+                      if (currentCharacter != null) {
+                        currentCharacter!.name = val;
+                        changed();
+                      }
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: FilterChip(
+                  label: Text("Build"),
+                  selected: !isPlayMode,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      isPlayMode = !selected;
+                    });
+                  },
+                ),
+              ),
+              FilterChip(
+                label: Text("Play"),
+                selected: isPlayMode,
+                onSelected: (bool selected) {
+                  setState(() {
+                    isPlayMode = selected;
+                  });
+                },
+              ),
+            ],
           );
-        }
+        },
       ),
-      body: DefaultTabController(
-        length: _CharacterPageTabs.values.length,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            // character info
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 8.0,
-              ),
-              child: CharacterInfoWidget(
-                character: character,
-                changed: changed,
-              ),
-            ),
-            TabBar(
-              tabs: [
-                for (var tab in _CharacterPageTabs.values)
-                  Tab(child: Text(tab.name)),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  for (var tab in _CharacterPageTabs.values)
-                    SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 8.0,
-                        ),
-                        child: tabContent(tab),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: CharacterContext(
+        character: currentCharacter!,
+        characterChoices: characterChoices,
+        changed: changed,
+        rebuildChoices: rebuildChoices,
+        child: isPlayMode ? CharacterPlayUi() : CharacterBuildUi(),
       ),
     );
   }
-}
-
-enum _CharacterPageTabs {
-  info("Stats & Info"),
-  spells("Spells"),
-  items("Items & Equipment");
-
-  final String name;
-
-  const _CharacterPageTabs(this.name);
 }

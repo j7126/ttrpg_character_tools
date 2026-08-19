@@ -34,6 +34,10 @@ extension CharacterExtension on Character {
     }
   }
 
+  bool get isValid {
+    return life.maxHitPointsQty > 0;
+  }
+
   bool isProficient(CharacterSkill skill) {
     return skills.proficency.contains(skill) ||
         skills.proficencyCalculated.contains(skill);

@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 import 'package:ttrpg_character_tools/util/int_extension.dart';
 
 class CharacterStatField extends StatefulWidget {
-  const CharacterStatField({
-    super.key,
-    required this.stat,
-    required this.character,
-    required this.changed,
-  });
+  const CharacterStatField({super.key, required this.stat});
 
   final MapEntry<StatsType, String> stat;
-  final Character character;
-  final Function() changed;
 
   @override
   State<CharacterStatField> createState() => _CharacterStatFieldState();
@@ -43,6 +36,8 @@ class _CharacterStatFieldState extends State<CharacterStatField> {
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(
         left: 8.0,
@@ -68,7 +63,7 @@ class _CharacterStatFieldState extends State<CharacterStatField> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0, bottom: 14.0),
                   child: Text(
-                    widget.character.stats
+                    characterContext.character.stats
                         .getStatModifier(widget.stat.key)
                         .toStringWithSign(),
                     style: TextStyle(fontSize: 28.0),
@@ -104,14 +99,21 @@ class _CharacterStatFieldState extends State<CharacterStatField> {
                       textAlign: TextAlign.center,
                       isDense: true,
                       focusNode: focusNode,
-                      value:
-                          widget.character.stats.getStatValue(widget.stat.key),
+                      value: characterContext.character.stats.getStatValue(
+                        widget.stat.key,
+                      ),
                       valueChanged: (val) {
-                        widget.character.stats.base[widget.stat.key.value] =
+                        characterContext.character.stats.base[widget
+                                .stat
+                                .key
+                                .value] =
                             val;
-                        widget.character.stats.current[widget.stat.key.value] =
+                        characterContext.character.stats.current[widget
+                                .stat
+                                .key
+                                .value] =
                             val;
-                        widget.changed();
+                        characterContext.changed();
                       },
                     ),
                   ),

@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
-import 'package:ttrpg_character_tools/character/character_ui/life_section/character_death_saves.dart';
-import 'package:ttrpg_character_tools/character/character_ui/life_section/character_hit_dice_field.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/life_section/character_death_saves.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/life_section/character_hit_dice_field.dart';
 
 class CharacterLifeWidget extends StatefulWidget {
-  const CharacterLifeWidget({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
-
-  final Character character;
-  final Function() changed;
+  const CharacterLifeWidget({super.key});
 
   @override
   State<CharacterLifeWidget> createState() => _CharacterLifeWidgetState();
@@ -48,6 +41,8 @@ class _CharacterLifeWidgetState extends State<CharacterLifeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -76,10 +71,12 @@ class _CharacterLifeWidgetState extends State<CharacterLifeWidget> {
                           textAlign: TextAlign.center,
                           textStyle: TextStyle(fontSize: 14),
                           focusNode: maxFocusNode,
-                          value: widget.character.life.maxHitPointsQty,
+                          value:
+                              characterContext.character.life.maxHitPointsQty,
                           valueChanged: (val) {
-                            widget.character.life.maxHitPointsQty = val;
-                            widget.changed();
+                            characterContext.character.life.maxHitPointsQty =
+                                val;
+                            characterContext.changed();
                           },
                         ),
                       ),
@@ -92,10 +89,10 @@ class _CharacterLifeWidgetState extends State<CharacterLifeWidget> {
                   textAlign: TextAlign.center,
                   textStyle: TextStyle(fontSize: 20),
                   focusNode: currentFocusNode,
-                  value: widget.character.life.hitPoints,
+                  value: characterContext.character.life.hitPoints,
                   valueChanged: (val) {
-                    widget.character.life.hitPoints = val;
-                    widget.changed();
+                    characterContext.character.life.hitPoints = val;
+                    characterContext.changed();
                   },
                 ),
               ],
@@ -106,23 +103,17 @@ class _CharacterLifeWidgetState extends State<CharacterLifeWidget> {
           padding: const EdgeInsets.all(8.0),
           child: IntFieldBase(
             label: "Temporary Hit Points",
-            value: widget.character.life.temporaryHitPoints,
+            value: characterContext.character.life.temporaryHitPoints,
             valueChanged: (val) {
-              widget.character.life.temporaryHitPoints = val;
-              widget.changed();
+              characterContext.character.life.temporaryHitPoints = val;
+              characterContext.changed();
             },
             emptyIsZero: true,
           ),
         ),
-        CharacterHitDiceField(
-          character: widget.character,
-          changed: widget.changed,
-        ),
-        if (widget.character.life.hitPoints == 0)
-          CharacterDeathSaves(
-            character: widget.character,
-            changed: widget.changed,
-          ),
+        CharacterHitDiceField(),
+        if (characterContext.character.life.hitPoints == 0)
+          CharacterDeathSaves(),
       ],
     );
   }

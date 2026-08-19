@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/class_selection/manage_class_dialog.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
 class ClassField extends StatelessWidget {
-  const ClassField({super.key, required this.character, required this.changed});
-
-  final Character character;
-  final Function() changed;
-
-  String getClassText() {
-    if (character.classInfo.isEmpty) {
-      return "None Selected";
-    }
-
-    var text = "";
-
-    for (var classInfo in character.classInfo) {
-      if (text.isNotEmpty) {
-        text += ", ";
-      }
-      text += "${classInfo.className} ${classInfo.classLevel}";
-    }
-
-    return text;
-  }
+  const ClassField({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
+    String getClassText() {
+      if (characterContext.character.classInfo.isEmpty) {
+        return "None Selected";
+      }
+
+      var text = "";
+
+      for (var classInfo in characterContext.character.classInfo) {
+        if (text.isNotEmpty) {
+          text += ", ";
+        }
+        text += "${classInfo.className} ${classInfo.classLevel}";
+      }
+
+      return text;
+    }
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
@@ -34,7 +33,13 @@ class ClassField extends StatelessWidget {
           showDialog(
             context: context,
             builder: (context) {
-              return ManageClassDialog(character: character, changed: changed);
+              return ManageClassDialog(
+                character: characterContext.character,
+                changed: () {
+                  characterContext.changed();
+                  characterContext.rebuildChoices();
+                },
+              );
             },
           );
         },

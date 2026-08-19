@@ -73,12 +73,14 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
       return;
     }
     setState(() {
-      if (classInfo.classLevel > 1) {
-        classInfo.classLevel--;
-      } else {
-        widget.character.classInfo.remove(classInfo);
+      if (mounted) {
+        if (classInfo.classLevel > 1) {
+          classInfo.classLevel--;
+        } else {
+          widget.character.classInfo.remove(classInfo);
+        }
+        widget.changed();
       }
-      widget.changed();
     });
   }
 

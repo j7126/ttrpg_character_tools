@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ttrpg_character_tools;
+
+message CharacterBuildChoice {
+  repeated CharacterBuildChoiceSelection choice = 1;
+  int32 maxSelectedQty = 2;
+}
+
+message CharacterBuildChoiceSelection {
+  string choiceName = 1;
+  optional string choiceReference = 2;
+}

@@ -8,6 +8,7 @@ import "character_life.proto";
 import "character_alignment.proto";
 import "character_class_info.proto";
 import "character_spells.proto";
+import "character_build_choice.proto";
 import "google/protobuf/timestamp.proto";
 
 message Character {
@@ -26,4 +27,5 @@ message Character {
   repeated CharacterClassInfo classInfo = 17;
   CharacterSpells spells = 18;
   optional int32 inspiration = 19;
+  map<string, CharacterBuildChoice> characterBuildChoices = 21;
 }

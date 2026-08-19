@@ -249,13 +249,13 @@ class DataLoader {
         var classesJson = json["class"] as List<dynamic>;
         DataModel5e.classes.addAll(
           classesJson.map(
-            (x) => Class5e.fromJson(x, DataModel5e.classFeatures),
+            (x) => Class5e.fromJson(x),
           ),
         );
         var subClassesJson = json["subclass"] as List<dynamic>;
         DataModel5e.subClasses.addAll(
           subClassesJson.map(
-            (x) => SubClass.fromJson(x, DataModel5e.classFeatures),
+            (x) => SubClass.fromJson(x),
           ),
         );
       } catch (e) {

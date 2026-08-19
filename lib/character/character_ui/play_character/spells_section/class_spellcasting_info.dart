@@ -150,7 +150,7 @@ class ClassSpellcastingInfo {
         }
         applyNum(val);
       } else if (match.group(3) != null) {
-        var val = int.tryParse(match.group(1)!);
+        var val = int.tryParse(match.group(3)!);
         if (val == null) {
           return 0;
         }

@@ -98,11 +98,37 @@ const Character$json = {
       '10': 'inspiration',
       '17': true
     },
+    {
+      '1': 'characterBuildChoices',
+      '3': 21,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.Character.CharacterBuildChoicesEntry',
+      '10': 'characterBuildChoices'
+    },
   ],
+  '3': [Character_CharacterBuildChoicesEntry$json],
   '8': [
     {'1': '_xp'},
     {'1': '_inspiration'},
   ],
+};
+
+@$core.Deprecated('Use characterDescriptor instead')
+const Character_CharacterBuildChoicesEntry$json = {
+  '1': 'CharacterBuildChoicesEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {
+      '1': 'value',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterBuildChoice',
+      '10': 'value'
+    },
+  ],
+  '7': {'7': true},
 };
 
 /// Descriptor for `Character`. Decode as a `google.protobuf.DescriptorProto`.
@@ -119,5 +145,9 @@ final $typed_data.Uint8List characterDescriptor = $convert.base64Decode(
     'Rlcl90b29scy5DaGFyYWN0ZXJTa2lsbHNSBnNraWxscxJHCgljbGFzc0luZm8YESADKAsyKS50'
     'dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyQ2xhc3NJbmZvUgljbGFzc0luZm8SPgoGc3'
     'BlbGxzGBIgASgLMiYudHRycGdfY2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclNwZWxsc1IGc3Bl'
-    'bGxzEiUKC2luc3BpcmF0aW9uGBMgASgFSAFSC2luc3BpcmF0aW9uiAEBQgUKA194cEIOCgxfaW'
-    '5zcGlyYXRpb24=');
+    'bGxzEiUKC2luc3BpcmF0aW9uGBMgASgFSAFSC2luc3BpcmF0aW9uiAEBEnEKFWNoYXJhY3Rlck'
+    'J1aWxkQ2hvaWNlcxgVIAMoCzI7LnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0ZXIuQ2hh'
+    'cmFjdGVyQnVpbGRDaG9pY2VzRW50cnlSFWNoYXJhY3RlckJ1aWxkQ2hvaWNlcxp1ChpDaGFyYW'
+    'N0ZXJCdWlsZENob2ljZXNFbnRyeRIQCgNrZXkYASABKAlSA2tleRJBCgV2YWx1ZRgCIAEoCzIr'
+    'LnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0ZXJCdWlsZENob2ljZVIFdmFsdWU6AjgBQg'
+    'UKA194cEIOCgxfaW5zcGlyYXRpb24=');

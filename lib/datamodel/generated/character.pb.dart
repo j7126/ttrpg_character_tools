@@ -17,6 +17,7 @@ import 'package:protobuf/well_known_types/google/protobuf/timestamp.pb.dart'
     as $0;
 
 import 'character_alignment.pb.dart' as $2;
+import 'character_build_choice.pb.dart' as $8;
 import 'character_class_info.pb.dart' as $6;
 import 'character_life.pb.dart' as $3;
 import 'character_skills.pb.dart' as $5;
@@ -43,6 +44,8 @@ class Character extends $pb.GeneratedMessage {
     $core.Iterable<$6.CharacterClassInfo>? classInfo,
     $7.CharacterSpells? spells,
     $core.int? inspiration,
+    $core.Iterable<$core.MapEntry<$core.String, $8.CharacterBuildChoice>>?
+        characterBuildChoices,
   }) {
     final result = create();
     if (id != null) result.id = id;
@@ -60,6 +63,8 @@ class Character extends $pb.GeneratedMessage {
     if (classInfo != null) result.classInfo.addAll(classInfo);
     if (spells != null) result.spells = spells;
     if (inspiration != null) result.inspiration = inspiration;
+    if (characterBuildChoices != null)
+      result.characterBuildChoices.addEntries(characterBuildChoices);
     return result;
   }
 
@@ -100,6 +105,15 @@ class Character extends $pb.GeneratedMessage {
     ..aOM<$7.CharacterSpells>(18, _omitFieldNames ? '' : 'spells',
         subBuilder: $7.CharacterSpells.create)
     ..aI(19, _omitFieldNames ? '' : 'inspiration')
+    ..m<$core.String, $8.CharacterBuildChoice>(
+        21, _omitFieldNames ? '' : 'characterBuildChoices',
+        protoName: 'characterBuildChoices',
+        entryClassName: 'Character.CharacterBuildChoicesEntry',
+        keyFieldType: $pb.PbFieldType.OS,
+        valueFieldType: $pb.PbFieldType.OM,
+        valueCreator: $8.CharacterBuildChoice.create,
+        valueDefaultOrMaker: $8.CharacterBuildChoice.getDefault,
+        packageName: const $pb.PackageName('ttrpg_character_tools'))
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -262,6 +276,10 @@ class Character extends $pb.GeneratedMessage {
   $core.bool hasInspiration() => $_has(14);
   @$pb.TagNumber(19)
   void clearInspiration() => $_clearField(19);
+
+  @$pb.TagNumber(21)
+  $pb.PbMap<$core.String, $8.CharacterBuildChoice> get characterBuildChoices =>
+      $_getMap(15);
 }
 
 const $core.bool _omitFieldNames =

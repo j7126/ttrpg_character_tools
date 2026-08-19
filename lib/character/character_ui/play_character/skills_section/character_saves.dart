@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/field_reset_button.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/field_reset_button.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 
 class CharacterSavesWidget extends StatelessWidget {
-  const CharacterSavesWidget({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
-
-  final Character character;
-  final Function() changed;
+  const CharacterSavesWidget({super.key});
 
   static const List<StatsType> saves = [
     StatsType.Strength,
@@ -26,6 +19,8 @@ class CharacterSavesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InputDecorator(
@@ -44,23 +39,36 @@ class CharacterSavesWidget extends StatelessWidget {
                 children: [
                   Checkbox(
                     activeColor:
-                        character.stats.savingThrowProficencyCalculated
+                        characterContext
+                            .character
+                            .stats
+                            .savingThrowProficencyCalculated
                             .contains(save)
                         ? null
                         : ColorScheme.of(context).tertiary,
-                    value: character.isProficientSave(save),
+                    value: characterContext.character.isProficientSave(save),
                     onChanged:
-                        !character.isProficientSave(save) ||
-                            character.stats.savingThrowProficency.contains(save)
+                        !characterContext.character.isProficientSave(save) ||
+                            characterContext
+                                .character
+                                .stats
+                                .savingThrowProficency
+                                .contains(save)
                         ? (value) {
                             if (value == true) {
-                              character.stats.savingThrowProficency.add(save);
+                              characterContext
+                                  .character
+                                  .stats
+                                  .savingThrowProficency
+                                  .add(save);
                             } else {
-                              character.stats.savingThrowProficency.remove(
-                                save,
-                              );
+                              characterContext
+                                  .character
+                                  .stats
+                                  .savingThrowProficency
+                                  .remove(save);
                             }
-                            changed();
+                            characterContext.changed();
                           }
                         : null,
                   ),
@@ -73,26 +81,33 @@ class CharacterSavesWidget extends StatelessWidget {
                       withSign: true,
                       inputBorder: UnderlineInputBorder(),
                       textStyle: TextStyle(fontSize: 14),
-                      value: character.getSaveModifier(save),
+                      value: characterContext.character.getSaveModifier(save),
                       valueChanged: (val) {
-                        character.stats.savingThrowOverrides[save.value] = val;
-                        changed();
+                        characterContext
+                                .character
+                                .stats
+                                .savingThrowOverrides[save.value] =
+                            val;
+                        characterContext.changed();
                       },
                       isCalculated: true,
                       hideResetButton: true,
-                      isOverridden: character.stats.savingThrowOverrides
+                      isOverridden: characterContext
+                          .character
+                          .stats
+                          .savingThrowOverrides
                           .containsKey(save.value),
                     ),
                   ),
                   Text(save.name),
                   Spacer(),
-                  if (character.stats.savingThrowOverrides.containsKey(
-                    save.value,
-                  ))
+                  if (characterContext.character.stats.savingThrowOverrides
+                      .containsKey(save.value))
                     FieldResetButton(
                       resetValue: () {
-                        character.stats.savingThrowOverrides.remove(save.value);
-                        changed();
+                        characterContext.character.stats.savingThrowOverrides
+                            .remove(save.value);
+                        characterContext.changed();
                       },
                     ),
                 ],

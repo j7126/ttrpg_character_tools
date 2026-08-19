@@ -1,46 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
 
 class CharacterDeathSaves extends StatelessWidget {
-  const CharacterDeathSaves({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
-
-  final Character character;
-  final Function() changed;
-
-  Widget successCheckbox(int num) {
-    return Checkbox(
-      value: character.life.deathSaveSuccess >= num,
-      onChanged: (val) {
-        if (val == true) {
-          character.life.deathSaveSuccess++;
-        } else {
-          character.life.deathSaveSuccess--;
-        }
-        changed();
-      },
-    );
-  }
-
-  Widget failCheckbox(int num) {
-    return Checkbox(
-      value: character.life.deathSaveFailure >= num,
-      onChanged: (val) {
-        if (val == true) {
-          character.life.deathSaveFailure++;
-        } else {
-          character.life.deathSaveFailure--;
-        }
-        changed();
-      },
-    );
-  }
+  const CharacterDeathSaves({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
+    Widget successCheckbox(int num) {
+      return Checkbox(
+        value: characterContext.character.life.deathSaveSuccess >= num,
+        onChanged: (val) {
+          if (val == true) {
+            characterContext.character.life.deathSaveSuccess++;
+          } else {
+            characterContext.character.life.deathSaveSuccess--;
+          }
+          characterContext.changed();
+        },
+      );
+    }
+
+    Widget failCheckbox(int num) {
+      return Checkbox(
+        value: characterContext.character.life.deathSaveFailure >= num,
+        onChanged: (val) {
+          if (val == true) {
+            characterContext.character.life.deathSaveFailure++;
+          } else {
+            characterContext.character.life.deathSaveFailure--;
+          }
+          characterContext.changed();
+        },
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InputDecorator(

@@ -8,27 +8,20 @@ import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell.dart';
 import 'package:render_ttrpg_data/theme/text_styles.dart';
 import 'package:render_ttrpg_data/util/int_extension.dart';
 import 'package:render_ttrpg_data/widgets/link_with_content_tooltip.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/int_field_base.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/text_field_base.dart';
-import 'package:ttrpg_character_tools/character/character_ui/spells_section/class_spellcasting_info.dart';
-import 'package:ttrpg_character_tools/character/character_ui/spells_section/wrap_columns.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/class_spellcasting_info.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/wrap_columns.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_spell_info.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_spells.pb.dart';
 
 class CharacterSpells extends StatefulWidget {
-  const CharacterSpells({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
-
-  final Character character;
-  final Function() changed;
+  const CharacterSpells({super.key});
 
   @override
   State<CharacterSpells> createState() => _CharacterSpellsState();
@@ -39,7 +32,9 @@ class _CharacterSpellsState extends State<CharacterSpells> {
   final Map<CharacterSpellInfo, Spell> spellsCache = {};
 
   void buildSpellCache() {
-    for (var spellInfo in widget.character.spells.knownCantrips) {
+    var characterContext = CharacterContext.of(context);
+
+    for (var spellInfo in characterContext.character.spells.knownCantrips) {
       if (!spellsCache.containsKey(spellInfo)) {
         spellsCache[spellInfo] = DataModel5e.spells.firstWhere(
           (x) =>
@@ -48,7 +43,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
         );
       }
     }
-    for (var spellInfo in widget.character.spells.knownSpells) {
+    for (var spellInfo in characterContext.character.spells.knownSpells) {
       if (!spellsCache.containsKey(spellInfo)) {
         spellsCache[spellInfo] = DataModel5e.spells.firstWhere(
           (x) =>
@@ -57,170 +52,6 @@ class _CharacterSpellsState extends State<CharacterSpells> {
         );
       }
     }
-  }
-
-  Widget spellEntry((CharacterSpellInfo, Spell) spellInfo) {
-    var spell = spellInfo.$2;
-    return Row(
-      children: [
-        Flexible(
-          fit: FlexFit.loose,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Flexible(
-                  child: LinkWithContentTooltip(
-                    tooltipView: SpellView(
-                      spell: spell,
-                      card: true,
-                      outlined: true,
-                      scrollable: true,
-                    ),
-                    contentView: SpellView(spell: spell, card: false),
-                    text: spell.name,
-                    style: TextStyle(fontSize: 18),
-                    fittedBox: true,
-                    waitDuration: Duration(milliseconds: 500),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            setState(() {
-              var infoList = spell.level == 0
-                  ? widget.character.spells.knownCantrips
-                  : widget.character.spells.knownSpells;
-              infoList.remove(spellInfo.$1);
-              widget.changed();
-            });
-          },
-          icon: Icon(Icons.delete, size: 20),
-        ),
-      ],
-    );
-  }
-
-  Widget addSpellsButton(
-    ClassSpellcastingInfo info,
-    List<(CharacterSpellInfo, Spell)> knownCantrips,
-    List<(CharacterSpellInfo, Spell)> knownSpells,
-  ) {
-    return SearchAnchor(
-      searchController:
-          spellSearchController[info.class5e] ??
-          (spellSearchController[info.class5e] = SearchController()),
-      viewHintText: "Add Spell",
-      viewConstraints: BoxConstraints(
-        minWidth: MediaQuery.of(context).size.width * 0.8,
-      ),
-      builder: (BuildContext context, SearchController controller) {
-        return SizedBox(
-          height: 48,
-          child: FilledButton(
-            style: ButtonStyle(
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(4),
-                ),
-              ),
-              padding: WidgetStatePropertyAll(
-                EdgeInsets.symmetric(horizontal: 12.0),
-              ),
-            ),
-            onPressed: () {
-              controller.openView();
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Icon(Icons.add), Text("Add Spell")],
-            ),
-          ),
-        );
-      },
-      suggestionsBuilder: (BuildContext context, SearchController controller) {
-        return DataModel5e.spells
-            .where(
-              (spell) =>
-                  spell.level <= info.highestSpellLevel &&
-                  ((spell.spellClassSource?.classSource != null &&
-                          spell.spellClassSource!.classSource!.any(
-                            (source) =>
-                                source.name == info.class5e.name &&
-                                source.source == info.class5e.source,
-                          )) ||
-                      (spell.spellClassSource?.classVariant != null &&
-                          spell.spellClassSource!.classVariant!.any(
-                            (source) =>
-                                source.name == info.class5e.name &&
-                                source.source == info.class5e.source,
-                          ))),
-            )
-            .sortedBy((x) => x.level)
-            .where(
-              (x) =>
-                  x.name.toLowerCase().contains(controller.text.toLowerCase()),
-            )
-            .map((spell) {
-              var infoList = spell.level == 0
-                  ? widget.character.spells.knownCantrips
-                  : widget.character.spells.knownSpells;
-              return ListTile(
-                title: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(spell.name),
-                    if (infoList.any((x) => x.spellName == spell.name))
-                      Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(
-                          "(Already Known)",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: ColorScheme.of(
-                              context,
-                            ).onSurface.withAlpha(150),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                trailing: Text(
-                  "${spell.level == 0 ? "Cantrip" : "${spell.level.ordinal()}-level"} | ${spell.source}",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: ColorScheme.of(context).onSurface.withAlpha(150),
-                  ),
-                ),
-                onTap: infoList.any((x) => x.spellName == spell.name)
-                    ? null
-                    : () {
-                        setState(() {
-                          controller.closeView(null);
-                          controller.clear();
-                          if (!infoList.any((x) => x.spellName == spell.name)) {
-                            infoList.add(
-                              CharacterSpellInfo(
-                                spellName: spell.name,
-                                spellSource: spell.source,
-                                spellClassName: info.class5e.name,
-                                spellClassSource: info.class5e.source,
-                              ),
-                            );
-                            widget.changed();
-                          }
-                        });
-                      },
-              );
-            });
-      },
-    );
   }
 
   @override
@@ -233,12 +64,186 @@ class _CharacterSpellsState extends State<CharacterSpells> {
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
     Iterable<ClassSpellcastingInfo> classes = [];
     if (DataLoader.ready) {
-      classes = widget.character.classInfo
-          .map((x) => ClassSpellcastingInfo.getClassInfo(widget.character, x))
+      classes = characterContext.character.classInfo
+          .map(
+            (x) => ClassSpellcastingInfo.getClassInfo(
+              characterContext.character,
+              x,
+            ),
+          )
           .nonNulls;
       buildSpellCache();
+    }
+
+    Widget spellEntry((CharacterSpellInfo, Spell) spellInfo) {
+      var spell = spellInfo.$2;
+      return Row(
+        children: [
+          Flexible(
+            fit: FlexFit.loose,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Flexible(
+                    child: LinkWithContentTooltip(
+                      tooltipView: SpellView(
+                        spell: spell,
+                        card: true,
+                        outlined: true,
+                        scrollable: true,
+                      ),
+                      contentView: SpellView(spell: spell, card: false),
+                      text: spell.name,
+                      style: TextStyle(fontSize: 18),
+                      fittedBox: true,
+                      waitDuration: Duration(milliseconds: 500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                var infoList = spell.level == 0
+                    ? characterContext.character.spells.knownCantrips
+                    : characterContext.character.spells.knownSpells;
+                infoList.remove(spellInfo.$1);
+                characterContext.changed();
+              });
+            },
+            icon: Icon(Icons.delete, size: 20),
+          ),
+        ],
+      );
+    }
+
+    Widget addSpellsButton(
+      ClassSpellcastingInfo info,
+      List<(CharacterSpellInfo, Spell)> knownCantrips,
+      List<(CharacterSpellInfo, Spell)> knownSpells,
+    ) {
+      return SearchAnchor(
+        searchController:
+            spellSearchController[info.class5e] ??
+            (spellSearchController[info.class5e] = SearchController()),
+        viewHintText: "Add Spell",
+        viewConstraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width * 0.8,
+        ),
+        builder: (BuildContext context, SearchController controller) {
+          return SizedBox(
+            height: 48,
+            child: FilledButton(
+              style: ButtonStyle(
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadiusGeometry.circular(4),
+                  ),
+                ),
+                padding: WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: 12.0),
+                ),
+              ),
+              onPressed: () {
+                controller.openView();
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Icon(Icons.add), Text("Add Spell")],
+              ),
+            ),
+          );
+        },
+        suggestionsBuilder: (BuildContext context, SearchController controller) {
+          return DataModel5e.spells
+              .where(
+                (spell) =>
+                    spell.level <= info.highestSpellLevel &&
+                    ((spell.spellClassSource?.classSource != null &&
+                            spell.spellClassSource!.classSource!.any(
+                              (source) =>
+                                  source.name == info.class5e.name &&
+                                  source.source == info.class5e.source,
+                            )) ||
+                        (spell.spellClassSource?.classVariant != null &&
+                            spell.spellClassSource!.classVariant!.any(
+                              (source) =>
+                                  source.name == info.class5e.name &&
+                                  source.source == info.class5e.source,
+                            ))),
+              )
+              .sortedBy((x) => x.level)
+              .where(
+                (x) => x.name.toLowerCase().contains(
+                  controller.text.toLowerCase(),
+                ),
+              )
+              .map((spell) {
+                var infoList = spell.level == 0
+                    ? characterContext.character.spells.knownCantrips
+                    : characterContext.character.spells.knownSpells;
+                return ListTile(
+                  title: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(spell.name),
+                      if (infoList.any((x) => x.spellName == spell.name))
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: Text(
+                            "(Already Known)",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: ColorScheme.of(
+                                context,
+                              ).onSurface.withAlpha(150),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  trailing: Text(
+                    "${spell.level == 0 ? "Cantrip" : "${spell.level.ordinal()}-level"} | ${spell.source}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: ColorScheme.of(context).onSurface.withAlpha(150),
+                    ),
+                  ),
+                  onTap: infoList.any((x) => x.spellName == spell.name)
+                      ? null
+                      : () {
+                          setState(() {
+                            controller.closeView(null);
+                            controller.clear();
+                            if (!infoList.any(
+                              (x) => x.spellName == spell.name,
+                            )) {
+                              infoList.add(
+                                CharacterSpellInfo(
+                                  spellName: spell.name,
+                                  spellSource: spell.source,
+                                  spellClassName: info.class5e.name,
+                                  spellClassSource: info.class5e.source,
+                                ),
+                              );
+                              characterContext.changed();
+                            }
+                          });
+                        },
+                );
+              });
+        },
+      );
     }
 
     return Column(
@@ -251,7 +256,10 @@ class _CharacterSpellsState extends State<CharacterSpells> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: () {
-                var knownCantrips = widget.character.spells.knownCantrips
+                var knownCantrips = characterContext
+                    .character
+                    .spells
+                    .knownCantrips
                     .where(
                       (x) =>
                           x.spellClassName == info.class5e.name &&
@@ -261,7 +269,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                     .where((x) => x.$2 != null)
                     .map((x) => (x.$1, x.$2!))
                     .toList();
-                var knownSpells = widget.character.spells.knownSpells
+                var knownSpells = characterContext.character.spells.knownSpells
                     .where(
                       (x) =>
                           x.spellClassName == info.class5e.name &&
@@ -310,7 +318,9 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                   ],
                                   if (info.preparedSpells != null &&
                                       info.preparedSpells! > 0) ...[
-                                    TextSpan(text: ", Spells Prepared: "),
+                                    if (info.cantripsKnown > 0)
+                                      TextSpan(text: ", "),
+                                    TextSpan(text: "Spells Prepared: "),
                                     TextSpan(
                                       text: knownSpells.length.toString(),
                                       style:
@@ -360,11 +370,14 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                             value: info.class5e.spellcastingAbility == null
                                 ? 0
                                 : 8 +
-                                      widget.character.stats.getStatModifier(
-                                        info.class5e.spellcastingAbility!
-                                            .toStatsType(),
-                                      ) +
-                                      widget.character.proficiencyBonus,
+                                      characterContext.character.stats
+                                          .getStatModifier(
+                                            info.class5e.spellcastingAbility!
+                                                .toStatsType(),
+                                          ) +
+                                      characterContext
+                                          .character
+                                          .proficiencyBonus,
                             valueChanged: null,
                           ),
                         ),
@@ -376,11 +389,14 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                             label: "Spell Attack Bonus",
                             value: info.class5e.spellcastingAbility == null
                                 ? 0
-                                : widget.character.stats.getStatModifier(
-                                        info.class5e.spellcastingAbility!
-                                            .toStatsType(),
-                                      ) +
-                                      widget.character.proficiencyBonus,
+                                : characterContext.character.stats
+                                          .getStatModifier(
+                                            info.class5e.spellcastingAbility!
+                                                .toStatsType(),
+                                          ) +
+                                      characterContext
+                                          .character
+                                          .proficiencyBonus,
                             valueChanged: null,
                             withSign: true,
                           ),
@@ -409,7 +425,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                           spellLevel <= info.highestSpellLevel;
                           spellLevel++
                         ) {
-                          var expendedSlots = widget
+                          var expendedSlots = characterContext
                               .character
                               .spells
                               .expendedSpellSlots
@@ -418,6 +434,9 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                     x.slotSource == info.magicType &&
                                     x.slotLevel == spellLevel,
                               );
+                          if (spellLevel == 0 && info.cantripsKnown <= 0) {
+                            continue;
+                          }
                           builder.add(
                             Column(
                               mainAxisSize: MainAxisSize.min,
@@ -509,7 +528,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                                         slotLevel: spellLevel,
                                                         numExpended: val,
                                                       );
-                                                  widget
+                                                  characterContext
                                                       .character
                                                       .spells
                                                       .expendedSpellSlots
@@ -518,7 +537,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                                   expendedSlots.numExpended =
                                                       val;
                                                 }
-                                                widget.changed();
+                                                characterContext.changed();
                                               },
                                             ),
                                           ),
@@ -538,7 +557,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                                                 spellLevel,
                                                             numExpended: 1,
                                                           );
-                                                      widget
+                                                      characterContext
                                                           .character
                                                           .spells
                                                           .expendedSpellSlots
@@ -547,7 +566,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                                       expendedSlots
                                                           .numExpended++;
                                                     }
-                                                    widget.changed();
+                                                    characterContext.changed();
                                                   },
                                             icon: Icon(
                                               Icons.add_circle_outline,

@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/dice_field_base.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/dice_field_base.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 
 class CharacterHitDiceField extends StatefulWidget {
-  const CharacterHitDiceField({
-    super.key,
-    required this.character,
-    required this.changed,
-  });
-
-  final Character character;
-  final Function() changed;
+  const CharacterHitDiceField({super.key});
 
   @override
   State<CharacterHitDiceField> createState() => _CharacterHitDiceFieldState();
@@ -47,6 +40,8 @@ class _CharacterHitDiceFieldState extends State<CharacterHitDiceField> {
 
   @override
   Widget build(BuildContext context) {
+    var characterContext = CharacterContext.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InputDecorator(
@@ -72,18 +67,24 @@ class _CharacterHitDiceFieldState extends State<CharacterHitDiceField> {
                       textAlign: TextAlign.center,
                       textStyle: TextStyle(fontSize: 14),
                       focusNode: maxFocusNode,
-                      value: widget.character.hitDiceMax,
+                      value: characterContext.character.hitDiceMax,
                       isCalculated: true,
-                      isOverridden:
-                          widget.character.life.hitDiceMaxOverride.isNotEmpty,
+                      isOverridden: characterContext
+                          .character
+                          .life
+                          .hitDiceMaxOverride
+                          .isNotEmpty,
                       valueChanged: (val) {
-                        widget.character.life.hitDiceMaxOverride.clear();
-                        widget.character.life.hitDiceMaxOverride.addAll(val);
-                        widget.changed();
+                        characterContext.character.life.hitDiceMaxOverride
+                            .clear();
+                        characterContext.character.life.hitDiceMaxOverride
+                            .addAll(val);
+                        characterContext.changed();
                       },
                       resetValue: () {
-                        widget.character.life.hitDiceMaxOverride.clear();
-                        widget.changed();
+                        characterContext.character.life.hitDiceMaxOverride
+                            .clear();
+                        characterContext.changed();
                       },
                     ),
                   ),
@@ -96,11 +97,11 @@ class _CharacterHitDiceFieldState extends State<CharacterHitDiceField> {
               textAlign: TextAlign.center,
               textStyle: TextStyle(fontSize: 20),
               focusNode: currentFocusNode,
-              value: widget.character.life.currentHitDice,
+              value: characterContext.character.life.currentHitDice,
               valueChanged: (val) {
-                widget.character.life.currentHitDice.clear();
-                widget.character.life.currentHitDice.addAll(val);
-                widget.changed();
+                characterContext.character.life.currentHitDice.clear();
+                characterContext.character.life.currentHitDice.addAll(val);
+                characterContext.changed();
               },
             ),
           ],

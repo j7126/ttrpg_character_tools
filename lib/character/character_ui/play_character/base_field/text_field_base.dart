@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/field_reset_button.dart';
-import 'package:ttrpg_character_tools/datamodel/extension/dice_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/dice.pb.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/field_reset_button.dart';
 
-class DiceFieldBase extends StatefulWidget {
-  const DiceFieldBase({
+class TextFieldBase extends StatefulWidget {
+  const TextFieldBase({
     super.key,
     required this.label,
     required this.value,
@@ -23,8 +20,8 @@ class DiceFieldBase extends StatefulWidget {
   });
 
   final String label;
-  final Iterable<Dice> value;
-  final Function(Iterable<Dice> val)? valueChanged;
+  final String value;
+  final Function(String val)? valueChanged;
   final InputBorder? inputBorder;
   final bool? showLabel;
   final bool isDense;
@@ -37,10 +34,10 @@ class DiceFieldBase extends StatefulWidget {
   final bool selectOnFocus;
 
   @override
-  State<DiceFieldBase> createState() => _DiceFieldBaseState();
+  State<TextFieldBase> createState() => _TextFieldBaseState();
 }
 
-class _DiceFieldBaseState extends State<DiceFieldBase> {
+class _TextFieldBaseState extends State<TextFieldBase> {
   late TextEditingController controller;
   late String textValue;
   FocusNode? _focusNode;
@@ -94,11 +91,8 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
       }
     }
 
-    var dice = DiceListExtension.fromString(controller.text);
-
-    textValue = dice.toDiceString();
-    controller.text = textValue;
-    widget.valueChanged?.call(dice);
+    textValue = controller.text;
+    widget.valueChanged?.call(textValue);
   }
 
   void _handleFocusChanged() {
@@ -116,7 +110,7 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
 
   @override
   void initState() {
-    textValue = widget.value.toDiceString();
+    textValue = widget.value;
     controller = TextEditingController(text: textValue);
 
     _effectiveFocusNode.addListener(_handleFocusChanged);
@@ -125,7 +119,7 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
   }
 
   @override
-  void didUpdateWidget(covariant DiceFieldBase oldWidget) {
+  void didUpdateWidget(covariant TextFieldBase oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.focusNode != oldWidget.focusNode) {
@@ -133,9 +127,8 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
       (widget.focusNode ?? _focusNode)?.addListener(_handleFocusChanged);
     }
 
-    if (widget.value.toDiceString() != textValue &&
-        !_effectiveFocusNode.hasFocus) {
-      textValue = widget.value.toDiceString();
+    if (widget.value != textValue && !_effectiveFocusNode.hasFocus) {
+      textValue = widget.value;
       controller.text = textValue;
     }
   }
@@ -157,9 +150,6 @@ class _DiceFieldBaseState extends State<DiceFieldBase> {
         _valueChanged();
       },
       textAlign: widget.textAlign,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9d \+]')),
-      ],
       decoration: InputDecoration(
         border: widget.inputBorder ?? OutlineInputBorder(),
         labelText: (widget.showLabel ?? widget.inputBorder != InputBorder.none)

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ttrpg_character_tools/character/character_ui/base_field/field_reset_button.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/field_reset_button.dart';
 import 'package:ttrpg_character_tools/util/int_extension.dart';
 
 class IntFieldBase extends StatefulWidget {
