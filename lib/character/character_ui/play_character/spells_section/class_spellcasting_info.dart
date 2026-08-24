@@ -1,10 +1,17 @@
 import 'package:collection/collection.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/subclass.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/interface/additional_spells_mixin.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/known_spell_context.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_class_info.pb.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character_spell_info.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum.dart';
 
 class ClassSpellcastingInfo {
@@ -17,6 +24,9 @@ class ClassSpellcastingInfo {
     required this.cantripsKnown,
     required this.highestSpellLevel,
     required this.magicType,
+    required this.additionalKnownSpells,
+    required this.expandedAvailableSpells,
+    required this.expandedAvailableSpellsBySlotLevel,
   });
 
   final CharacterClassInfo classInfo;
@@ -27,16 +37,44 @@ class ClassSpellcastingInfo {
   final int cantripsKnown;
   final int highestSpellLevel;
   final String magicType;
+  final List<KnownSpellContext> additionalKnownSpells;
+  final List<String> expandedAvailableSpells;
+  final Map<int, List<String>> expandedAvailableSpellsBySlotLevel;
 
   static ClassSpellcastingInfo? getClassInfo(
-    Character character,
+    CharacterContext context,
     CharacterClassInfo info,
   ) {
+    List<AdditionalSpellsMixin> additionalSpellProviders = [];
+
+    // get class info.
     var class5e = info.getClass();
     if (class5e == null) {
       return null;
     }
 
+    // additional known spells from feats, subclass etc...
+    var subClass = info.getSubClass();
+    if (subClass != null && subClass.additionalSpells != null) {
+      additionalSpellProviders.add(subClass);
+    }
+    for (var feat in class5e.classFeatures) {
+      if (feat.additionalSpells != null) {
+        additionalSpellProviders.add(feat);
+      }
+    }
+    List<KnownSpellContext> additionalKnownSpells = [];
+    List<String> expandedAvailableSpells = [];
+    Map<int, List<String>> expandedAvailableSpellsBySlotLevel = {};
+    parseAdditionalSpells(
+      additionalSpellProviders,
+      context,
+      additionalKnownSpells,
+      expandedAvailableSpells,
+      expandedAvailableSpellsBySlotLevel,
+    );
+
+    // spell slots.
     Map<int, int> spellSlots = {};
     String? magicType;
     if (class5e.classTableGroups != null) {
@@ -83,9 +121,14 @@ class ClassSpellcastingInfo {
       }
     }
 
-    if (spellSlots.isEmpty && (class5e.cantripProgression?.isEmpty ?? true)) {
+    // if we don't have any spellcasting, then return null.
+    if (spellSlots.isEmpty &&
+        (class5e.cantripProgression?.isEmpty ?? true) &&
+        additionalKnownSpells.isEmpty) {
       return null;
     }
+
+    // build info.
     return ClassSpellcastingInfo(
       classInfo: info,
       class5e: class5e,
@@ -95,7 +138,7 @@ class ClassSpellcastingInfo {
                 ? class5e.spellsKnownProgression!.last
                 : class5e.spellsKnownProgression![info.classLevel - 1]
           : 0,
-      preparedSpells: computePreparedSpells(character, info),
+      preparedSpells: computePreparedSpells(context.character, info),
       cantripsKnown: (class5e.cantripProgression?.isNotEmpty ?? false)
           ? info.classLevel - 1 > class5e.cantripProgression!.length
                 ? class5e.cantripProgression!.last
@@ -104,6 +147,9 @@ class ClassSpellcastingInfo {
       highestSpellLevel:
           spellSlots.entries.lastWhereOrNull((x) => x.value > 0)?.key ?? 0,
       magicType: magicType ?? "unknown",
+      additionalKnownSpells: additionalKnownSpells,
+      expandedAvailableSpells: expandedAvailableSpells,
+      expandedAvailableSpellsBySlotLevel: expandedAvailableSpellsBySlotLevel,
     );
   }
 
@@ -161,5 +207,125 @@ class ClassSpellcastingInfo {
     }
 
     return result;
+  }
+
+  static void parseAdditionalSpells(
+    List<AdditionalSpellsMixin> additionalSpellProviders,
+    CharacterContext context,
+    List<KnownSpellContext> additionalKnownSpells,
+    List<String> expandedAvailableSpells,
+    Map<int, List<String>> expandedAvailableSpellsBySlotLevel,
+  ) {
+    for (var provider in additionalSpellProviders) {
+      Map<String, dynamic>? additionalSpells;
+
+      // map spells based on character choice related to the spell provider
+      if (provider.additionalSpells!.length == 1) {
+        additionalSpells = provider.additionalSpells!.first;
+      } else if (provider.additionalSpells!.length > 1) {
+        var choice = context.characterChoices.firstWhereOrNull(
+          (x) => x.reference == provider.refString,
+        );
+        var choiceVal = choice?.getCurrentChoice(context.character);
+        if (choiceVal != null && choiceVal.choice.isNotEmpty) {
+          additionalSpells = provider.additionalSpells!.firstWhereOrNull(
+            (x) => choiceVal.choice.first.choiceName == x["name"],
+          );
+        }
+      }
+
+      // handle additional spells
+      if (additionalSpells != null) {
+        var known = additionalSpells["known"];
+        var expanded = additionalSpells["expanded"];
+        var hasClassInfo = provider is SubClass;
+        var classInfo = hasClassInfo
+            ? context.character.classInfo.firstWhereOrNull(
+                (x) => x.className == provider.className,
+              )
+            : null;
+        if (hasClassInfo && classInfo == null) {
+          return;
+        }
+
+        // Known spells
+        if (known is Map<String, dynamic>) {
+          for (
+            var level = 1;
+            level <= (classInfo?.classLevel ?? context.character.totalLevel);
+            level++
+          ) {
+            var lvlKnown = known[level.toString()];
+            if (lvlKnown is List) {
+              for (var knownString in lvlKnown) {
+                if (knownString is! String) {
+                  continue;
+                }
+                var spell = DataModel5e.spells.firstWhereOrNull(
+                  (x) => x.name.toLowerCase() == knownString.toLowerCase(),
+                );
+                if (spell != null &&
+                    !additionalKnownSpells.any(
+                      (x) =>
+                          x.info.spellName.toLowerCase() ==
+                          knownString.toLowerCase(),
+                    )) {
+                  additionalKnownSpells.add(
+                    KnownSpellContext(
+                      info: CharacterSpellInfo(
+                        spellName: spell.name,
+                        spellSource: spell.source,
+                        spellClassName: classInfo?.className,
+                        spellClassSource: classInfo?.classSource,
+                      ),
+                      additionalKnownType: AdditionalKnownSpellType.known,
+                      sourceRef: provider.refString,
+                    ),
+                  );
+                }
+              }
+            }
+          }
+        }
+
+        // Expanded available spells
+        if (expanded is Map<String, dynamic>) {
+          for (
+            var level = 1;
+            level <= (classInfo?.classLevel ?? context.character.totalLevel);
+            level++
+          ) {
+            var classLvlExpanded = expanded[level.toString()];
+            if (classLvlExpanded is List) {
+              for (var item in classLvlExpanded) {
+                if (item is String) {
+                  expandedAvailableSpells.add(item);
+                } else if (item is Map<String, dynamic>) {
+                  var all = item["all"];
+                  if (all is String) {
+                    expandedAvailableSpells.add("@all:$all");
+                  }
+                }
+              }
+            }
+          }
+          for (var spellLevel = 1; spellLevel <= 9; spellLevel++) {
+            var spellLvlExpanded = expanded["s$spellLevel"];
+            if (spellLvlExpanded is List) {
+              for (var item in spellLvlExpanded) {
+                if (item is String) {
+                  var lst = expandedAvailableSpellsBySlotLevel[spellLevel];
+                  if (lst == null) {
+                    lst = [];
+                    expandedAvailableSpellsBySlotLevel[spellLevel] = lst;
+                  }
+                  lst.add(item);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

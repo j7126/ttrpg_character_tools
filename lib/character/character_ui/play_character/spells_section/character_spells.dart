@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:render_ttrpg_data/data_views/5e/spell_view.dart';
+import 'package:render_ttrpg_data/data_views/generic/entry_view/text_view.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell.dart';
@@ -12,6 +13,8 @@ import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/class_spellcasting_info.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/known_spell_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/spell_extension.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/spells_section/wrap_columns.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
@@ -31,9 +34,18 @@ class _CharacterSpellsState extends State<CharacterSpells> {
   final Map<Class5e, SearchController> spellSearchController = {};
   final Map<CharacterSpellInfo, Spell> spellsCache = {};
 
-  void buildSpellCache() {
+  void buildSpellCache(Iterable<ClassSpellcastingInfo> info) {
     var characterContext = CharacterContext.of(context);
 
+    for (var spellInfo in info.expand((x) => x.additionalKnownSpells)) {
+      if (!spellsCache.containsKey(spellInfo.info)) {
+        spellsCache[spellInfo.info] = DataModel5e.spells.firstWhere(
+          (x) =>
+              x.name == spellInfo.info.spellName &&
+              x.source == spellInfo.info.spellSource,
+        );
+      }
+    }
     for (var spellInfo in characterContext.character.spells.knownCantrips) {
       if (!spellsCache.containsKey(spellInfo)) {
         spellsCache[spellInfo] = DataModel5e.spells.firstWhere(
@@ -69,17 +81,13 @@ class _CharacterSpellsState extends State<CharacterSpells> {
     Iterable<ClassSpellcastingInfo> classes = [];
     if (DataLoader.ready) {
       classes = characterContext.character.classInfo
-          .map(
-            (x) => ClassSpellcastingInfo.getClassInfo(
-              characterContext.character,
-              x,
-            ),
-          )
+          .map((x) => ClassSpellcastingInfo.getClassInfo(characterContext, x))
           .nonNulls;
-      buildSpellCache();
+      buildSpellCache(classes);
     }
 
-    Widget spellEntry((CharacterSpellInfo, Spell) spellInfo) {
+    Widget spellEntry((KnownSpellContext, Spell) spellInfo) {
+      var knownContext = spellInfo.$1;
       var spell = spellInfo.$2;
       return Row(
         children: [
@@ -110,26 +118,45 @@ class _CharacterSpellsState extends State<CharacterSpells> {
               ),
             ),
           ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                var infoList = spell.level == 0
-                    ? characterContext.character.spells.knownCantrips
-                    : characterContext.character.spells.knownSpells;
-                infoList.remove(spellInfo.$1);
-                characterContext.changed();
-              });
-            },
-            icon: Icon(Icons.delete, size: 20),
+          Opacity(
+            opacity:
+                knownContext.additionalKnownType ==
+                    AdditionalKnownSpellType.none
+                ? 1
+                : 0,
+            child: IconButton(
+              onPressed:
+                  knownContext.additionalKnownType ==
+                      AdditionalKnownSpellType.none
+                  ? () {
+                      setState(() {
+                        var infoList = spell.level == 0
+                            ? characterContext.character.spells.knownCantrips
+                            : characterContext.character.spells.knownSpells;
+                        infoList.remove(spellInfo.$1.info);
+                        characterContext.changed();
+                      });
+                    }
+                  : null,
+              icon: Icon(Icons.delete, size: 20),
+            ),
           ),
+          if (knownContext.additionalKnownType !=
+                  AdditionalKnownSpellType.none &&
+              knownContext.sourceRef != null)
+            Opacity(
+              opacity: 0.4,
+              child: TextView("Innate: ${knownContext.sourceRef!}"),
+            ),
         ],
       );
     }
 
     Widget addSpellsButton(
       ClassSpellcastingInfo info,
-      List<(CharacterSpellInfo, Spell)> knownCantrips,
-      List<(CharacterSpellInfo, Spell)> knownSpells,
+      List<(KnownSpellContext, Spell)> knownCantrips,
+      List<(KnownSpellContext, Spell)> knownSpells,
+      List<(KnownSpellContext, Spell)> additionalKnownSpells,
     ) {
       return SearchAnchor(
         searchController:
@@ -166,22 +193,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
         },
         suggestionsBuilder: (BuildContext context, SearchController controller) {
           return DataModel5e.spells
-              .where(
-                (spell) =>
-                    spell.level <= info.highestSpellLevel &&
-                    ((spell.spellClassSource?.classSource != null &&
-                            spell.spellClassSource!.classSource!.any(
-                              (source) =>
-                                  source.name == info.class5e.name &&
-                                  source.source == info.class5e.source,
-                            )) ||
-                        (spell.spellClassSource?.classVariant != null &&
-                            spell.spellClassSource!.classVariant!.any(
-                              (source) =>
-                                  source.name == info.class5e.name &&
-                                  source.source == info.class5e.source,
-                            ))),
-              )
+              .where((spell) => spell.isAvailable(info))
               .sortedBy((x) => x.level)
               .where(
                 (x) => x.name.toLowerCase().contains(
@@ -197,16 +209,18 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(spell.name),
-                      if (infoList.any((x) => x.spellName == spell.name))
+                      if (infoList.any((x) => x.spellName == spell.name) ||
+                          info.additionalKnownSpells.any(
+                            (x) => x.info.spellName == spell.name,
+                          ))
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Text(
                             "(Already Known)",
                             style: TextStyle(
                               fontSize: 16,
-                              color: ColorScheme.of(
-                                context,
-                              ).onSurface.withAlpha(150),
+                              color: ColorScheme.of(context).onSurface
+                                  .withAlpha(150),
                             ),
                           ),
                         ),
@@ -256,6 +270,11 @@ class _CharacterSpellsState extends State<CharacterSpells> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: () {
+                var additionalKnown = info.additionalKnownSpells
+                    .map((x) => (x, spellsCache[x.info]))
+                    .where((x) => x.$2 != null)
+                    .map((x) => (x.$1, x.$2!))
+                    .toList();
                 var knownCantrips = characterContext
                     .character
                     .spells
@@ -267,7 +286,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                     )
                     .map((x) => (x, spellsCache[x]))
                     .where((x) => x.$2 != null)
-                    .map((x) => (x.$1, x.$2!))
+                    .map((x) => (KnownSpellContext(info: x.$1), x.$2!))
                     .toList();
                 var knownSpells = characterContext.character.spells.knownSpells
                     .where(
@@ -277,10 +296,11 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                     )
                     .map((x) => (x, spellsCache[x]))
                     .where((x) => x.$2 != null)
-                    .map((x) => (x.$1, x.$2!))
+                    .map((x) => (KnownSpellContext(info: x.$1), x.$2!))
                     .sortedBy((x) => x.$2.level)
                     .toList();
-                var knownAll = [
+                Map<int, Set<(KnownSpellContext, Spell)>> knownAll = [
+                  ...additionalKnown,
                   ...knownCantrips,
                   ...knownSpells,
                 ].groupSetsBy((x) => x.$2.level);
@@ -408,6 +428,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                           info,
                           knownCantrips,
                           knownSpells,
+                          additionalKnown,
                         ),
                       ),
                     ],
@@ -445,17 +466,15 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                                 Container(
                                   decoration: BoxDecoration(
                                     borderRadius:
-                                        ((InputDecorationTheme.of(
-                                                      context,
-                                                    ).border
+                                        ((InputDecorationTheme.of(context)
+                                                        .border
                                                     as OutlineInputBorder?) ??
                                                 (const OutlineInputBorder()))
                                             .borderRadius,
                                     border: Border.all(
                                       width: 1,
-                                      color: ColorScheme.of(
-                                        context,
-                                      ).outline, // avoids black
+                                      color: ColorScheme.of(context)
+                                          .outline, // avoids black
                                     ),
                                   ),
                                   child: SizedBox(
