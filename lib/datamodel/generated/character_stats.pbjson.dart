@@ -39,14 +39,14 @@ const StatsMethod$json = {
   '2': [
     {'1': 'StatsStandardArray', '2': 0},
     {'1': 'StatsPointBuy', '2': 1},
-    {'1': 'StatsRolled', '2': 2},
+    {'1': 'StatsManual', '2': 2},
   ],
 };
 
 /// Descriptor for `StatsMethod`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List statsMethodDescriptor = $convert.base64Decode(
     'CgtTdGF0c01ldGhvZBIWChJTdGF0c1N0YW5kYXJkQXJyYXkQABIRCg1TdGF0c1BvaW50QnV5EA'
-    'ESDwoLU3RhdHNSb2xsZWQQAg==');
+    'ESDwoLU3RhdHNNYW51YWwQAg==');
 
 @$core.Deprecated('Use characterStatsDescriptor instead')
 const CharacterStats$json = {

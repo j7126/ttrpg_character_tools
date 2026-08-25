@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/build_character/character_build_ability_scores.dart';
 import 'package:ttrpg_character_tools/character/character_ui/build_character/character_choice_card.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/character_info.dart';
 
@@ -17,6 +18,10 @@ class CharacterBuildUi extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             CharacterInfoWidget(),
+            CharacterBuildAbilityScores(
+              character: characterContext.character,
+              changed: characterContext.changed,
+            ),
             for (var choice in CharacterContext.of(context).characterChoices)
               CharacterChoiceCard(
                 choice: choice,

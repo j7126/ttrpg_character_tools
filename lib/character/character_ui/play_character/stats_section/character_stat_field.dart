@@ -6,9 +6,18 @@ import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pbenum
 import 'package:ttrpg_character_tools/util/int_extension.dart';
 
 class CharacterStatField extends StatefulWidget {
-  const CharacterStatField({super.key, required this.stat});
+  const CharacterStatField({
+    super.key,
+    required this.stat,
+    required this.isEditingBase,
+    required this.minValue,
+    required this.maxValue,
+  });
 
   final MapEntry<StatsType, String> stat;
+  final bool isEditingBase;
+  final int minValue;
+  final int maxValue;
 
   @override
   State<CharacterStatField> createState() => _CharacterStatFieldState();
@@ -63,9 +72,13 @@ class _CharacterStatFieldState extends State<CharacterStatField> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0, bottom: 14.0),
                   child: Text(
-                    characterContext.character.stats
-                        .getStatModifier(widget.stat.key)
-                        .toStringWithSign(),
+                    widget.isEditingBase
+                        ? characterContext.character.stats
+                              .getBaseStatModifier(widget.stat.key)
+                              .toStringWithSign()
+                        : characterContext.character.stats
+                              .getStatModifier(widget.stat.key)
+                              .toStringWithSign(),
                     style: TextStyle(fontSize: 28.0),
                     textAlign: TextAlign.center,
                   ),
@@ -99,22 +112,29 @@ class _CharacterStatFieldState extends State<CharacterStatField> {
                       textAlign: TextAlign.center,
                       isDense: true,
                       focusNode: focusNode,
-                      value: characterContext.character.stats.getStatValue(
-                        widget.stat.key,
-                      ),
-                      valueChanged: (val) {
-                        characterContext.character.stats.base[widget
-                                .stat
-                                .key
-                                .value] =
-                            val;
-                        characterContext.character.stats.current[widget
-                                .stat
-                                .key
-                                .value] =
-                            val;
-                        characterContext.changed();
-                      },
+                      value: widget.isEditingBase
+                          ? characterContext.character.stats.getBaseStatValue(
+                              widget.stat.key,
+                            )
+                          : characterContext.character.stats.getStatValue(
+                              widget.stat.key,
+                            ),
+                      valueChanged: widget.isEditingBase
+                          ? (val) {
+                              val = val.clamp(widget.minValue, widget.maxValue);
+                              characterContext.character.stats.base[widget
+                                      .stat
+                                      .key
+                                      .value] =
+                                  val;
+                              characterContext.character.stats.current[widget
+                                      .stat
+                                      .key
+                                      .value] =
+                                  val;
+                              characterContext.changed();
+                            }
+                          : null,
                     ),
                   ),
                 ),

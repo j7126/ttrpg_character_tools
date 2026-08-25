@@ -5,8 +5,17 @@ extension CharacterStatsExtension on CharacterStats {
     return current[stat.value] ?? base[stat.value] ?? 0;
   }
 
+  int getBaseStatValue(StatsType stat) {
+    return base[stat.value] ?? 0;
+  }
+
   int getStatModifier(StatsType stat) {
     final value = getStatValue(stat);
+    return (value / 2 - 5).floor();
+  }
+
+  int getBaseStatModifier(StatsType stat) {
+    final value = getBaseStatValue(stat);
     return (value / 2 - 5).floor();
   }
 }

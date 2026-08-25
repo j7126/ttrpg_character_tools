@@ -50,13 +50,13 @@ class StatsMethod extends $pb.ProtobufEnum {
       StatsMethod._(0, _omitEnumNames ? '' : 'StatsStandardArray');
   static const StatsMethod StatsPointBuy =
       StatsMethod._(1, _omitEnumNames ? '' : 'StatsPointBuy');
-  static const StatsMethod StatsRolled =
-      StatsMethod._(2, _omitEnumNames ? '' : 'StatsRolled');
+  static const StatsMethod StatsManual =
+      StatsMethod._(2, _omitEnumNames ? '' : 'StatsManual');
 
   static const $core.List<StatsMethod> values = <StatsMethod>[
     StatsStandardArray,
     StatsPointBuy,
-    StatsRolled,
+    StatsManual,
   ];
 
   static final $core.List<StatsMethod?> _byValue =

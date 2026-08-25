@@ -23,5 +23,5 @@ enum StatsType {
 enum StatsMethod {
   StatsStandardArray = 0;
   StatsPointBuy = 1;
-  StatsRolled = 2;
+  StatsManual = 2;
 }
