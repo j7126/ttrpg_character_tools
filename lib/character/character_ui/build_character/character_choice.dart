@@ -185,9 +185,7 @@ class CharacterChoice {
       }
     }
 
-    choices.sort(
-      (a, b) => a.level == null || b.level == null ? 0 : a.level! - b.level!,
-    );
+    choices.sortBy((x) => x.level ?? -1);
 
     return choices;
   }
