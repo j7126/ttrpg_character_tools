@@ -1,4 +1,6 @@
 import 'package:collection/collection.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/race/race.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
@@ -68,6 +70,19 @@ extension CharacterExtension on Character {
       modifier += proficiencyBonus;
     }
     return modifier;
+  }
+
+  Race? getRace() {
+    if (hasRace() && race.isNotEmpty) {
+      var parts = race.split("|");
+      var name = parts[0];
+      var source = parts.length > 1 ? parts[1] : null;
+      return DataModel5e.races.firstWhereOrNull(
+        (x) => x.name == name && (source == null || x.source == source),
+      );
+    }
+
+    return null;
   }
 
   int get totalLevel => classInfo.map((x) => x.classLevel).sum;

@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/character/character_ui/build_character/character_choice.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character_class_info.pb.dart';
 
 class CharacterContext extends InheritedWidget {
   const CharacterContext({
     super.key,
     required this.character,
     required this.characterChoices,
+    required this.allRulesObjs,
     required this.changed,
-    required this.rebuildChoices,
+    required this.rebuildRulesData,
     required super.child,
   });
 
   final Character character;
   final List<CharacterChoice> characterChoices;
+  final List<(dynamic obj, CharacterClassInfo? classInfo)> allRulesObjs;
   final Function() changed;
-  final Function() rebuildChoices;
+  final Function() rebuildRulesData;
 
   static CharacterContext? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<CharacterContext>();
@@ -31,6 +34,7 @@ class CharacterContext extends InheritedWidget {
   bool updateShouldNotify(CharacterContext oldWidget) =>
       oldWidget.changed != changed ||
       oldWidget.character != character ||
-      oldWidget.rebuildChoices != rebuildChoices ||
-      oldWidget.characterChoices != characterChoices;
+      oldWidget.rebuildRulesData != rebuildRulesData ||
+      oldWidget.characterChoices != characterChoices ||
+      oldWidget.allRulesObjs != allRulesObjs;
 }

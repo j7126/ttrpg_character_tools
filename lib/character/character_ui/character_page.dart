@@ -8,8 +8,10 @@ import 'package:ttrpg_character_tools/character/character_ui/build_character/cha
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/character_play_ui.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
+import 'package:ttrpg_character_tools/datamodel/generated/character_class_info.pb.dart';
 import 'package:ttrpg_character_tools/pages/page_scaffold.dart';
 
 class CharacterPage extends StatefulWidget {
@@ -23,10 +25,62 @@ class _CharacterPageState extends State<CharacterPage> {
   bool isPlayMode = false;
   Character? currentCharacter;
   List<CharacterChoice> characterChoices = [];
+  List<(dynamic obj, CharacterClassInfo? classInfo)> allRulesObjs = [];
 
   void changed() {
     setState(() {
       CharacterManager.instance.saveCharacter();
+    });
+  }
+
+  void rebuildRulesData() {
+    if (mounted) {
+      setState(() {
+        refreshAllRulesObjs();
+        rebuildChoices();
+      });
+    }
+  }
+
+  void refreshAllRulesObjs() {
+    if (currentCharacter == null) {
+      return;
+    }
+
+    setState(() {
+      allRulesObjs = [];
+
+      // class
+      for (var classInfo in currentCharacter!.classInfo) {
+        var class5e = classInfo.getClass();
+        var subClass = classInfo.getSubClass();
+        if (class5e != null) {
+          allRulesObjs.add((class5e, classInfo));
+          for (var feat in class5e.classFeatures) {
+            if (feat.level <= classInfo.classLevel) {
+              if (subClass != null &&
+                  class5e.gainSubClassFeatures.any(feat.refCompare)) {
+                for (var subFeat in subClass.subclassFeatures) {
+                  if (subFeat.level == feat.level) {
+                    allRulesObjs.add((subFeat, classInfo));
+                  }
+                }
+              } else {
+                allRulesObjs.add((feat, classInfo));
+              }
+            }
+          }
+        }
+        if (subClass != null) {
+          allRulesObjs.add((subClass, classInfo));
+        }
+      }
+
+      // race
+      var race = currentCharacter!.getRace();
+      if (race != null) {
+        allRulesObjs.add((race, null));
+      }
     });
   }
 
@@ -35,16 +89,15 @@ class _CharacterPageState extends State<CharacterPage> {
       return;
     }
     setState(() {
-      characterChoices = CharacterChoice.getChoices(currentCharacter!);
+      characterChoices = CharacterChoice.getChoices(
+        currentCharacter!,
+        allRulesObjs,
+      );
     });
   }
 
   void _dataLoaderReadyListener() {
-    if (mounted) {
-      setState(() {
-        rebuildChoices();
-      });
-    }
+    rebuildRulesData();
   }
 
   @override
@@ -90,7 +143,7 @@ class _CharacterPageState extends State<CharacterPage> {
     if (currentCharacter != CharacterManager.instance.character) {
       currentCharacter = CharacterManager.instance.character;
       isPlayMode = currentCharacter!.isValid;
-      rebuildChoices();
+      rebuildRulesData();
     }
 
     return PageScaffold(
@@ -148,8 +201,9 @@ class _CharacterPageState extends State<CharacterPage> {
       body: CharacterContext(
         character: currentCharacter!,
         characterChoices: characterChoices,
+        allRulesObjs: allRulesObjs,
         changed: changed,
-        rebuildChoices: rebuildChoices,
+        rebuildRulesData: rebuildRulesData,
         child: isPlayMode ? CharacterPlayUi() : CharacterBuildUi(),
       ),
     );

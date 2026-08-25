@@ -45,8 +45,6 @@ class ClassSpellcastingInfo {
     CharacterContext context,
     CharacterClassInfo info,
   ) {
-    List<AdditionalSpellsMixin> additionalSpellProviders = [];
-
     // get class info.
     var class5e = info.getClass();
     if (class5e == null) {
@@ -54,20 +52,10 @@ class ClassSpellcastingInfo {
     }
 
     // additional known spells from feats, subclass etc...
-    var subClass = info.getSubClass();
-    if (subClass != null && subClass.additionalSpells != null) {
-      additionalSpellProviders.add(subClass);
-    }
-    for (var feat in class5e.classFeatures) {
-      if (feat.additionalSpells != null) {
-        additionalSpellProviders.add(feat);
-      }
-    }
     List<KnownSpellContext> additionalKnownSpells = [];
     List<String> expandedAvailableSpells = [];
     Map<int, List<String>> expandedAvailableSpellsBySlotLevel = {};
     parseAdditionalSpells(
-      additionalSpellProviders,
       context,
       additionalKnownSpells,
       expandedAvailableSpells,
@@ -210,13 +198,17 @@ class ClassSpellcastingInfo {
   }
 
   static void parseAdditionalSpells(
-    List<AdditionalSpellsMixin> additionalSpellProviders,
     CharacterContext context,
     List<KnownSpellContext> additionalKnownSpells,
     List<String> expandedAvailableSpells,
     Map<int, List<String>> expandedAvailableSpellsBySlotLevel,
   ) {
-    for (var provider in additionalSpellProviders) {
+    for (var (provider, _) in context.allRulesObjs) {
+      if (provider is! AdditionalSpellsMixin ||
+          provider.additionalSpells == null) {
+        continue;
+      }
+
       Map<String, dynamic>? additionalSpells;
 
       // map spells based on character choice related to the spell provider

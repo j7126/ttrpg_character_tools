@@ -37,7 +37,7 @@ class ClassField extends StatelessWidget {
                 character: characterContext.character,
                 changed: () {
                   characterContext.changed();
-                  characterContext.rebuildChoices();
+                  characterContext.rebuildRulesData();
                 },
               );
             },

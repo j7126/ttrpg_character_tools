@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:render_ttrpg_data/data_views/5e/feature_view.dart';
 import 'package:render_ttrpg_data/data_views/generic/entry_view/entry_view.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
-import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/generic/entry.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/feature_like.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/race/race_feature.dart';
@@ -12,6 +11,7 @@ import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/build_character/character_choice_card.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 
 class CharacterFeatures extends StatefulWidget {
   const CharacterFeatures({super.key});
@@ -54,23 +54,15 @@ class _CharacterFeaturesState extends State<CharacterFeatures> {
     }
 
     if (filterMode == null || filterMode == RaceFeature) {
-      if (characterContext.character.hasRace() &&
-          characterContext.character.race.isNotEmpty) {
-        var raceParts = characterContext.character.race.split("|");
-        var raceName = raceParts[0];
-        var raceSource = raceParts.length > 1 ? raceParts[1] : null;
-        var race = DataModel5e.races.firstWhereOrNull(
-          (x) =>
-              x.name == raceName &&
-              (raceSource == null || x.source == raceSource),
-        );
+      var race = characterContext.character.getRace();
+      if (race != null) {
         var excludedEntries = ["speed", "creature type"];
-        for (var entry in race?.entries ?? <FeatureEntry>[]) {
+        for (var entry in race.entries) {
           if (entry.name != null &&
               !excludedEntries.contains(entry.name!.toLowerCase())) {
             var feature = RaceFeature(
               name: entry.name!,
-              source: race!.source,
+              source: race.source,
               page: race.page,
               otherSources: race.otherSources,
               srd: race.srd,

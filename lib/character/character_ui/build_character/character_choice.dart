@@ -1,3 +1,4 @@
+import 'package:render_ttrpg_data/datamodel/5e/data/interface/optional_feature_progression_mixin.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_build_choice.pb.dart';
 import 'package:collection/collection.dart';
@@ -5,7 +6,6 @@ import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/generic/entry.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/additional_spells_mixin.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/optional_feature_progression.dart';
-import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_class_info.pb.dart';
 
 class CharacterChoice {
@@ -29,19 +29,6 @@ class CharacterChoice {
 
   CharacterBuildChoice? getCurrentChoice(Character character) =>
       character.characterBuildChoices[reference];
-
-  static Iterable<CharacterChoice> getFeatureChoices(
-    ClassFeature5e feat,
-    Map<String, List<OptionalFeatureProgression>> progression,
-    int characterLevel,
-  ) {
-    List<CharacterChoice> choices = [];
-
-    choices.addAll(getAdditionalSpellsChoice(feat));
-    choices.addAll(getOptionalFeatureChoice(feat, progression, characterLevel));
-
-    return choices;
-  }
 
   static Iterable<CharacterChoice> getAdditionalSpellsChoice(
     AdditionalSpellsMixin additionalSpellProvider,
@@ -152,54 +139,29 @@ class CharacterChoice {
     return [];
   }
 
-  static List<CharacterChoice> getChoices(Character character) {
+  static List<CharacterChoice> getChoices(
+    Character character,
+    List<(dynamic obj, CharacterClassInfo? classInfo)> allRulesObjs,
+  ) {
     List<CharacterChoice> choices = [];
     List<OptionalFeatureProgression> optionalFeatureProgressionList = [];
-    List<(ClassFeature5e feat, CharacterClassInfo classInfo)> features = [];
 
-    void addProgression(
-      List<OptionalFeatureProgression> optionalfeatureProgression,
-      String? classSource,
-    ) {
-      optionalFeatureProgressionList.addAll(
-        optionalfeatureProgression.map(
-          (x) => x = OptionalFeatureProgression(
-            name: x.name,
-            featureType: x.featureType,
-            progression: x.progression,
-            required: x.required,
-            classSource: classSource,
+    // get optional feature progression.
+    for (var (obj, classInfo) in allRulesObjs) {
+      if (obj is OptionalFeatureProgressionMixin && classInfo != null) {
+        List<OptionalFeatureProgression> optionalfeatureProgression =
+            obj.optionalfeatureProgression ?? [];
+        optionalFeatureProgressionList.addAll(
+          optionalfeatureProgression.map(
+            (x) => x = OptionalFeatureProgression(
+              name: x.name,
+              featureType: x.featureType,
+              progression: x.progression,
+              required: x.required,
+              classSource: classInfo.className,
+            ),
           ),
-        ),
-      );
-    }
-
-    for (var classInfo in character.classInfo) {
-      var class5e = classInfo.getClass();
-      var subClass = classInfo.getSubClass();
-      if (class5e != null) {
-        if (subClass != null) {
-          choices.addAll(getAdditionalSpellsChoice(subClass));
-          addProgression(
-            subClass.optionalfeatureProgression ?? [],
-            class5e.name,
-          );
-        }
-        addProgression(class5e.optionalfeatureProgression ?? [], class5e.name);
-        for (var feat in class5e.classFeatures) {
-          if (feat.level <= classInfo.classLevel) {
-            if (subClass != null &&
-                class5e.gainSubClassFeatures.any(feat.refCompare)) {
-              for (var subFeat in subClass.subclassFeatures) {
-                if (subFeat.level == feat.level) {
-                  features.add((feat, classInfo));
-                }
-              }
-            } else {
-              features.add((feat, classInfo));
-            }
-          }
-        }
+        );
       }
     }
 
@@ -207,14 +169,20 @@ class CharacterChoice {
         .groupListsBy((x) => x.classSource)
         .map((key, val) => MapEntry(key, val.groupListsBy((x) => x.name)));
 
-    for (var feat in features) {
-      choices.addAll(
-        getFeatureChoices(
-          feat.$1,
-          optionalFeatureProgression[feat.$1.className] ?? {},
-          feat.$2.classLevel,
-        ),
-      );
+    // all choices
+    for (var (obj, classInfo) in allRulesObjs) {
+      if (obj is AdditionalSpellsMixin) {
+        choices.addAll(getAdditionalSpellsChoice(obj));
+      }
+      if (obj is ClassFeature5e && classInfo != null) {
+        choices.addAll(
+          getOptionalFeatureChoice(
+            obj,
+            optionalFeatureProgression[obj.className] ?? {},
+            classInfo.classLevel,
+          ),
+        );
+      }
     }
 
     choices.sort(
