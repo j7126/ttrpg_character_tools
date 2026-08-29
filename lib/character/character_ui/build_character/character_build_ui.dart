@@ -18,10 +18,7 @@ class CharacterBuildUi extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             CharacterInfoWidget(),
-            CharacterBuildAbilityScores(
-              character: characterContext.character,
-              changed: characterContext.changed,
-            ),
+            CharacterBuildAbilityScores(context: characterContext),
             for (var choice in CharacterContext.of(context).characterChoices)
               CharacterChoiceCard(
                 choice: choice,

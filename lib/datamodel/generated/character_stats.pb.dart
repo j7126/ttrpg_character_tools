@@ -29,6 +29,8 @@ class CharacterStats extends $pb.GeneratedMessage {
     $core.Iterable<$core.MapEntry<$core.int, $core.int>>? savingThrowOverrides,
     $core.Iterable<StatsType>? savingThrowProficency,
     $core.Iterable<StatsType>? savingThrowProficencyCalculated,
+    $core.Iterable<$core.MapEntry<$core.int, $core.int>>? statsOverride,
+    $core.Iterable<CharacterStatsSelection>? characterStatsSelections,
   }) {
     final result = create();
     if (base != null) result.base.addEntries(base);
@@ -43,6 +45,9 @@ class CharacterStats extends $pb.GeneratedMessage {
     if (savingThrowProficencyCalculated != null)
       result.savingThrowProficencyCalculated
           .addAll(savingThrowProficencyCalculated);
+    if (statsOverride != null) result.statsOverride.addEntries(statsOverride);
+    if (characterStatsSelections != null)
+      result.characterStatsSelections.addAll(characterStatsSelections);
     return result;
   }
 
@@ -92,6 +97,16 @@ class CharacterStats extends $pb.GeneratedMessage {
         valueOf: StatsType.valueOf,
         enumValues: StatsType.values,
         defaultEnumValue: StatsType.Strength)
+    ..m<$core.int, $core.int>(8, _omitFieldNames ? '' : 'statsOverride',
+        protoName: 'statsOverride',
+        entryClassName: 'CharacterStats.StatsOverrideEntry',
+        keyFieldType: $pb.PbFieldType.O3,
+        valueFieldType: $pb.PbFieldType.O3,
+        packageName: const $pb.PackageName('ttrpg_character_tools'))
+    ..pPM<CharacterStatsSelection>(
+        9, _omitFieldNames ? '' : 'characterStatsSelections',
+        protoName: 'characterStatsSelections',
+        subBuilder: CharacterStatsSelection.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -145,6 +160,91 @@ class CharacterStats extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(7)
   $pb.PbList<StatsType> get savingThrowProficencyCalculated => $_getList(6);
+
+  @$pb.TagNumber(8)
+  $pb.PbMap<$core.int, $core.int> get statsOverride => $_getMap(7);
+
+  @$pb.TagNumber(9)
+  $pb.PbList<CharacterStatsSelection> get characterStatsSelections =>
+      $_getList(8);
+}
+
+class CharacterStatsSelection extends $pb.GeneratedMessage {
+  factory CharacterStatsSelection({
+    $core.String? providerRef,
+    $core.Iterable<$core.MapEntry<$core.int, $core.int>>? currentMods,
+    $core.Iterable<$core.MapEntry<$core.int, $core.int>>? fixedMods,
+  }) {
+    final result = create();
+    if (providerRef != null) result.providerRef = providerRef;
+    if (currentMods != null) result.currentMods.addEntries(currentMods);
+    if (fixedMods != null) result.fixedMods.addEntries(fixedMods);
+    return result;
+  }
+
+  CharacterStatsSelection._();
+
+  factory CharacterStatsSelection.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory CharacterStatsSelection.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'CharacterStatsSelection',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'ttrpg_character_tools'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'providerRef', protoName: 'providerRef')
+    ..m<$core.int, $core.int>(2, _omitFieldNames ? '' : 'currentMods',
+        protoName: 'currentMods',
+        entryClassName: 'CharacterStatsSelection.CurrentModsEntry',
+        keyFieldType: $pb.PbFieldType.O3,
+        valueFieldType: $pb.PbFieldType.O3,
+        packageName: const $pb.PackageName('ttrpg_character_tools'))
+    ..m<$core.int, $core.int>(3, _omitFieldNames ? '' : 'fixedMods',
+        protoName: 'fixedMods',
+        entryClassName: 'CharacterStatsSelection.FixedModsEntry',
+        keyFieldType: $pb.PbFieldType.O3,
+        valueFieldType: $pb.PbFieldType.O3,
+        packageName: const $pb.PackageName('ttrpg_character_tools'))
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  CharacterStatsSelection clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  CharacterStatsSelection copyWith(
+          void Function(CharacterStatsSelection) updates) =>
+      super.copyWith((message) => updates(message as CharacterStatsSelection))
+          as CharacterStatsSelection;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static CharacterStatsSelection create() => CharacterStatsSelection._();
+  @$core.override
+  CharacterStatsSelection createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static CharacterStatsSelection getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<CharacterStatsSelection>(create);
+  static CharacterStatsSelection? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get providerRef => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set providerRef($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasProviderRef() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearProviderRef() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $pb.PbMap<$core.int, $core.int> get currentMods => $_getMap(1);
+
+  @$pb.TagNumber(3)
+  $pb.PbMap<$core.int, $core.int> get fixedMods => $_getMap(2);
 }
 
 const $core.bool _omitFieldNames =

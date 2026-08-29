@@ -9,6 +9,14 @@ message CharacterStats {
   map<int32, int32> savingThrowOverrides = 5;
   repeated StatsType savingThrowProficency = 6;
   repeated StatsType savingThrowProficencyCalculated = 7;
+  map<int32, int32> statsOverride = 8;
+  repeated CharacterStatsSelection characterStatsSelections = 9;
+}
+
+message CharacterStatsSelection {
+  string providerRef = 1;
+  map<int32, int32> currentMods = 2;
+  map<int32, int32> fixedMods = 3;
 }
 
 enum StatsType {

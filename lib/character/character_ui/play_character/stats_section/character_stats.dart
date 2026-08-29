@@ -8,11 +8,15 @@ class CharacterStatsWidget extends StatelessWidget {
     this.isEditingBase = false,
     this.minValue = 0,
     this.maxValue = 20,
+    this.hideModifier = false,
+    this.changed,
   });
 
   final bool isEditingBase;
   final int minValue;
   final int maxValue;
+  final bool hideModifier;
+  final Function()? changed;
 
   static const List<MapEntry<StatsType, String>> availableStats = [
     MapEntry(StatsType.Strength, "Strength"),
@@ -34,6 +38,8 @@ class CharacterStatsWidget extends StatelessWidget {
               isEditingBase: isEditingBase,
               minValue: minValue,
               maxValue: maxValue,
+              hideModifier: hideModifier,
+              changed: changed,
             ),
           ),
       ],

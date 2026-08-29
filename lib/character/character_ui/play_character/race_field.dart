@@ -34,9 +34,8 @@ class RaceField extends StatelessWidget {
                           "(${characterContext.character.race.split("|")[1]})",
                           style: TextStyle(
                             fontSize: 12,
-                            color: TextTheme.of(
-                              context,
-                            ).bodyMedium?.color?.withAlpha(160),
+                            color: TextTheme.of(context).bodyMedium?.color
+                                ?.withAlpha(160),
                           ),
                         ),
                       ),
@@ -44,9 +43,8 @@ class RaceField extends StatelessWidget {
                   Spacer(),
                   Icon(
                     Icons.edit,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withAlpha(200),
+                    color: Theme.of(context).colorScheme.onSurface
+                        .withAlpha(200),
                   ),
                 ],
               ),
@@ -68,9 +66,8 @@ class RaceField extends StatelessWidget {
                         item.source,
                         style: TextStyle(
                           fontSize: 12,
-                          color: ColorScheme.of(
-                            context,
-                          ).onSurface.withAlpha(150),
+                          color: ColorScheme.of(context).onSurface
+                              .withAlpha(150),
                         ),
                       ),
                       onTap: () {
@@ -78,6 +75,7 @@ class RaceField extends StatelessWidget {
                         characterContext.character.race =
                             "${item.name}|${item.source}";
                         characterContext.changed();
+                        characterContext.rebuildRulesData();
                       },
                     ),
                   );

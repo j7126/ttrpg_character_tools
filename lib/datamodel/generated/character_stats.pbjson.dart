@@ -107,11 +107,28 @@ const CharacterStats$json = {
       '6': '.ttrpg_character_tools.StatsType',
       '10': 'savingThrowProficencyCalculated'
     },
+    {
+      '1': 'statsOverride',
+      '3': 8,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterStats.StatsOverrideEntry',
+      '10': 'statsOverride'
+    },
+    {
+      '1': 'characterStatsSelections',
+      '3': 9,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterStatsSelection',
+      '10': 'characterStatsSelections'
+    },
   ],
   '3': [
     CharacterStats_BaseEntry$json,
     CharacterStats_CurrentEntry$json,
-    CharacterStats_SavingThrowOverridesEntry$json
+    CharacterStats_SavingThrowOverridesEntry$json,
+    CharacterStats_StatsOverrideEntry$json
   ],
 };
 
@@ -145,6 +162,16 @@ const CharacterStats_SavingThrowOverridesEntry$json = {
   '7': {'7': true},
 };
 
+@$core.Deprecated('Use characterStatsDescriptor instead')
+const CharacterStats_StatsOverrideEntry$json = {
+  '1': 'StatsOverrideEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 5, '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
 /// Descriptor for `CharacterStats`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List characterStatsDescriptor = $convert.base64Decode(
     'Cg5DaGFyYWN0ZXJTdGF0cxJDCgRiYXNlGAEgAygLMi8udHRycGdfY2hhcmFjdGVyX3Rvb2xzLk'
@@ -157,8 +184,71 @@ final $typed_data.Uint8List characterStatsDescriptor = $convert.base64Decode(
     'dPdmVycmlkZXMSVgoVc2F2aW5nVGhyb3dQcm9maWNlbmN5GAYgAygOMiAudHRycGdfY2hhcmFj'
     'dGVyX3Rvb2xzLlN0YXRzVHlwZVIVc2F2aW5nVGhyb3dQcm9maWNlbmN5EmoKH3NhdmluZ1Rocm'
     '93UHJvZmljZW5jeUNhbGN1bGF0ZWQYByADKA4yIC50dHJwZ19jaGFyYWN0ZXJfdG9vbHMuU3Rh'
-    'dHNUeXBlUh9zYXZpbmdUaHJvd1Byb2ZpY2VuY3lDYWxjdWxhdGVkGjcKCUJhc2VFbnRyeRIQCg'
-    'NrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGjoKDEN1cnJlbnRFbnRy'
-    'eRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGkcKGVNhdmluZ1'
-    'Rocm93T3ZlcnJpZGVzRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAVSBXZh'
-    'bHVlOgI4AQ==');
+    'dHNUeXBlUh9zYXZpbmdUaHJvd1Byb2ZpY2VuY3lDYWxjdWxhdGVkEl4KDXN0YXRzT3ZlcnJpZG'
+    'UYCCADKAsyOC50dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU3RhdHMuU3RhdHNPdmVy'
+    'cmlkZUVudHJ5Ug1zdGF0c092ZXJyaWRlEmoKGGNoYXJhY3RlclN0YXRzU2VsZWN0aW9ucxgJIA'
+    'MoCzIuLnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0ZXJTdGF0c1NlbGVjdGlvblIYY2hh'
+    'cmFjdGVyU3RhdHNTZWxlY3Rpb25zGjcKCUJhc2VFbnRyeRIQCgNrZXkYASABKAVSA2tleRIUCg'
+    'V2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGjoKDEN1cnJlbnRFbnRyeRIQCgNrZXkYASABKAVSA2tl'
+    'eRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGkcKGVNhdmluZ1Rocm93T3ZlcnJpZGVzRW50cn'
+    'kSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAVSBXZhbHVlOgI4ARpAChJTdGF0c092'
+    'ZXJyaWRlRW50cnkSEAoDa2V5GAEgASgFUgNrZXkSFAoFdmFsdWUYAiABKAVSBXZhbHVlOgI4AQ'
+    '==');
+
+@$core.Deprecated('Use characterStatsSelectionDescriptor instead')
+const CharacterStatsSelection$json = {
+  '1': 'CharacterStatsSelection',
+  '2': [
+    {'1': 'providerRef', '3': 1, '4': 1, '5': 9, '10': 'providerRef'},
+    {
+      '1': 'currentMods',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterStatsSelection.CurrentModsEntry',
+      '10': 'currentMods'
+    },
+    {
+      '1': 'fixedMods',
+      '3': 3,
+      '4': 3,
+      '5': 11,
+      '6': '.ttrpg_character_tools.CharacterStatsSelection.FixedModsEntry',
+      '10': 'fixedMods'
+    },
+  ],
+  '3': [
+    CharacterStatsSelection_CurrentModsEntry$json,
+    CharacterStatsSelection_FixedModsEntry$json
+  ],
+};
+
+@$core.Deprecated('Use characterStatsSelectionDescriptor instead')
+const CharacterStatsSelection_CurrentModsEntry$json = {
+  '1': 'CurrentModsEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 5, '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+@$core.Deprecated('Use characterStatsSelectionDescriptor instead')
+const CharacterStatsSelection_FixedModsEntry$json = {
+  '1': 'FixedModsEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 5, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 5, '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+/// Descriptor for `CharacterStatsSelection`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List characterStatsSelectionDescriptor = $convert.base64Decode(
+    'ChdDaGFyYWN0ZXJTdGF0c1NlbGVjdGlvbhIgCgtwcm92aWRlclJlZhgBIAEoCVILcHJvdmlkZX'
+    'JSZWYSYQoLY3VycmVudE1vZHMYAiADKAsyPy50dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFj'
+    'dGVyU3RhdHNTZWxlY3Rpb24uQ3VycmVudE1vZHNFbnRyeVILY3VycmVudE1vZHMSWwoJZml4ZW'
+    'RNb2RzGAMgAygLMj0udHRycGdfY2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclN0YXRzU2VsZWN0'
+    'aW9uLkZpeGVkTW9kc0VudHJ5UglmaXhlZE1vZHMaPgoQQ3VycmVudE1vZHNFbnRyeRIQCgNrZX'
+    'kYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGjwKDkZpeGVkTW9kc0VudHJ5'
+    'EhAKA2tleRgBIAEoBVIDa2V5EhQKBXZhbHVlGAIgASgFUgV2YWx1ZToCOAE=');

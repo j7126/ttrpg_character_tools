@@ -4,7 +4,7 @@ extension CharacterStatsMethodExtension on StatsMethod {
   String get displayName => switch (this) {
     StatsMethod.StatsStandardArray => "Standard Array",
     StatsMethod.StatsPointBuy => "Point Buy",
-    StatsMethod.StatsManual => "Rolled",
+    StatsMethod.StatsManual => "Rolled / Manual",
     _ => name,
   };
 }

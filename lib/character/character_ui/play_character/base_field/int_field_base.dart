@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:render_ttrpg_data/util/int_extension.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/field_reset_button.dart';
-import 'package:ttrpg_character_tools/util/int_extension.dart';
 
 class IntFieldBase extends StatefulWidget {
   const IntFieldBase({
@@ -22,6 +22,8 @@ class IntFieldBase extends StatefulWidget {
     this.emptyIsZero = false,
     this.selectOnFocus = true,
     this.hideResetButton = false,
+    this.minValue,
+    this.maxValue,
   });
 
   final String label;
@@ -40,6 +42,8 @@ class IntFieldBase extends StatefulWidget {
   final bool emptyIsZero;
   final bool selectOnFocus;
   final bool hideResetButton;
+  final int? minValue;
+  final int? maxValue;
 
   @override
   State<IntFieldBase> createState() => _IntFieldBaseState();
@@ -61,20 +65,34 @@ class _IntFieldBaseState extends State<IntFieldBase> {
     });
   }
 
-  void _valueChanged() async {
+  void _valueChanged({int? newValue}) async {
     if (widget.valueChanged == null || showingConfirmOverrideDialog) {
       return;
     }
 
-    var value = controller.text.isEmpty && widget.emptyIsZero
-        ? 0
-        : int.tryParse(controller.text);
+    var value =
+        newValue ??
+        (controller.text.isEmpty && widget.emptyIsZero
+            ? 0
+            : int.tryParse(controller.text));
     if (value == null) {
       _updateText();
       return;
     }
 
     if (value == intVal) {
+      return;
+    }
+
+    if (widget.minValue != null && value < widget.minValue!) {
+      value = widget.minValue!;
+    }
+    if (widget.maxValue != null && value > widget.maxValue!) {
+      value = widget.maxValue!;
+    }
+
+    if (value == intVal) {
+      _updateText();
       return;
     }
 
@@ -135,6 +153,24 @@ class _IntFieldBaseState extends State<IntFieldBase> {
     }
   }
 
+  KeyEventResult _keyboardCallback(FocusNode node, KeyEvent keyEvent) {
+    if (!node.hasFocus || widget.isCalculated) {
+      return KeyEventResult.ignored;
+    }
+
+    if (keyEvent is KeyDownEvent) {
+      if (keyEvent.logicalKey == LogicalKeyboardKey.arrowUp) {
+        _valueChanged(newValue: intVal + 1);
+        return KeyEventResult.handled;
+      } else if (keyEvent.logicalKey == LogicalKeyboardKey.arrowDown) {
+        _valueChanged(newValue: intVal - 1);
+        return KeyEventResult.handled;
+      }
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   @override
   void initState() {
     intVal = widget.value;
@@ -171,40 +207,46 @@ class _IntFieldBaseState extends State<IntFieldBase> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      readOnly: widget.valueChanged == null,
-      onEditingComplete: () {
-        _effectiveFocusNode.unfocus();
-        _valueChanged();
-      },
-      textAlign: widget.textAlign,
-      keyboardType: TextInputType.numberWithOptions(
-        signed: true,
-        decimal: false,
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onKeyEvent: _keyboardCallback,
+      child: TextField(
+        controller: controller,
+        readOnly: widget.valueChanged == null,
+        onEditingComplete: () {
+          _effectiveFocusNode.unfocus();
+          _valueChanged();
+        },
+        textAlign: widget.textAlign,
+        keyboardType: TextInputType.numberWithOptions(
+          signed: true,
+          decimal: false,
+        ),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9\-+\.]')),
+        ],
+        decoration: InputDecoration(
+          border: widget.inputBorder ?? OutlineInputBorder(),
+          labelText:
+              (widget.showLabel ?? widget.inputBorder != InputBorder.none)
+              ? widget.label
+              : null,
+          hintText: widget.label,
+          isDense: widget.isDense,
+          suffixIcon: widget.isOverridden && !widget.hideResetButton
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Tooltip(
+                    message: "This field is overriden",
+                    child: FieldResetButton(resetValue: widget.resetValue),
+                  ),
+                )
+              : null,
+        ),
+        focusNode: _effectiveFocusNode,
+        style: widget.textStyle,
       ),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9\-+\.]')),
-      ],
-      decoration: InputDecoration(
-        border: widget.inputBorder ?? OutlineInputBorder(),
-        labelText: (widget.showLabel ?? widget.inputBorder != InputBorder.none)
-            ? widget.label
-            : null,
-        hintText: widget.label,
-        isDense: widget.isDense,
-        suffixIcon: widget.isOverridden && !widget.hideResetButton
-            ? Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Tooltip(
-                  message: "This field is overriden",
-                  child: FieldResetButton(resetValue: widget.resetValue),
-                ),
-              )
-            : null,
-      ),
-      focusNode: _effectiveFocusNode,
-      style: widget.textStyle,
     );
   }
 }

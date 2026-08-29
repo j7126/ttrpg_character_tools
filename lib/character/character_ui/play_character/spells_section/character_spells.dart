@@ -208,7 +208,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                   title: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(spell.name),
+                      TextView(spell.refString, hintEntities: [spell]),
                       if (infoList.any((x) => x.spellName == spell.name) ||
                           info.additionalKnownSpells.any(
                             (x) => x.info.spellName == spell.name,
