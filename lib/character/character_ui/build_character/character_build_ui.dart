@@ -3,6 +3,7 @@ import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/build_character/character_build_ability_scores.dart';
 import 'package:ttrpg_character_tools/character/character_ui/build_character/character_choice_card.dart';
 import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
+import 'package:ttrpg_character_tools/data_loader.dart';
 
 class CharacterBuildUi extends StatelessWidget {
   const CharacterBuildUi({super.key});
@@ -14,19 +15,23 @@ class CharacterBuildUi extends StatelessWidget {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CharacterInfoWidget(),
-            CharacterBuildAbilityScores(context: characterContext),
-            for (var choice in CharacterContext.of(context).characterChoices)
-              CharacterChoiceCard(
-                choice: choice,
-                character: characterContext.character,
-                changed: characterContext.changed,
+        child: !DataLoader.ready
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CharacterInfoWidget(),
+                  CharacterBuildAbilityScores(context: characterContext),
+                  for (var choice in CharacterContext.of(
+                    context,
+                  ).characterChoices)
+                    CharacterChoiceCard(
+                      choice: choice,
+                      character: characterContext.character,
+                      changed: characterContext.changed,
+                    ),
+                ],
               ),
-          ],
-        ),
       ),
     );
   }
