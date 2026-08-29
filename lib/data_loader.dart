@@ -16,6 +16,7 @@ import 'package:render_ttrpg_data/datamodel/5e/data/item/item_property.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/item/item_type.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/json_processer_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/race/race.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/race/subrace/sub_race.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell_source.dart';
 import 'package:ttrpg_character_tools/data_load_error.dart';
@@ -193,6 +194,8 @@ class DataLoader {
       var json = await loadJson(path);
       var races = json["race"] as List<dynamic>;
       DataModel5e.races.addAll(races.map((x) => Race.fromJson(x)));
+      var subRaces = json["subrace"] as List<dynamic>;
+      DataModel5e.subRaces.addAll(subRaces.map((x) => SubRace.fromJson(x)));
     } catch (e) {
       errors.add(
         DataLoadError(
@@ -247,16 +250,10 @@ class DataLoader {
           subclassFeature?.map((x) => ClassFeature5e.fromJson(x)) ?? [],
         );
         var classesJson = json["class"] as List<dynamic>;
-        DataModel5e.classes.addAll(
-          classesJson.map(
-            (x) => Class5e.fromJson(x),
-          ),
-        );
+        DataModel5e.classes.addAll(classesJson.map((x) => Class5e.fromJson(x)));
         var subClassesJson = json["subclass"] as List<dynamic>;
         DataModel5e.subClasses.addAll(
-          subClassesJson.map(
-            (x) => SubClass.fromJson(x),
-          ),
+          subClassesJson.map((x) => SubClass.fromJson(x)),
         );
       } catch (e) {
         errors.add(

@@ -3,7 +3,7 @@ import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/class_selection/class_field.dart';
-import 'package:ttrpg_character_tools/character/character_ui/play_character/race_field.dart';
+import 'package:ttrpg_character_tools/character/character_ui/race_field.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/options.pb.dart';
 
 class CharacterInfoWidget extends StatelessWidget {

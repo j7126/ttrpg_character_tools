@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ttrpg_character_tools/character/character_ui/play_character/character_info.dart';
+import 'package:ttrpg_character_tools/character/character_ui/character_info.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/features_and_traits_section/character_features.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/life_section/character_life.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/skills_section/character_inspiration_field.dart';

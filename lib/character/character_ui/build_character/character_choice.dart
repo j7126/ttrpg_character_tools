@@ -41,7 +41,7 @@ class CharacterChoice {
       return [
         CharacterChoice(
           reference: additionalSpellProvider.refString,
-          name: additionalSpellProvider.name,
+          name: additionalSpellProvider.variableName,
           sourceLabel: additionalSpellProvider.sourceLabel,
           options: additionalSpellProvider.additionalSpells!
               .map(

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/race/race.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/race/subrace/sub_race.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
@@ -79,6 +80,16 @@ extension CharacterExtension on Character {
       var source = parts.length > 1 ? parts[1] : null;
       return DataModel5e.races.firstWhereOrNull(
         (x) => x.name == name && (source == null || x.source == source),
+      );
+    }
+
+    return null;
+  }
+
+  SubRace? getSubRace() {
+    if (hasSubRace() && subRace.isNotEmpty) {
+      return DataModel5e.subRaces.firstWhereOrNull(
+        (x) => x.refCompare(subRace),
       );
     }
 

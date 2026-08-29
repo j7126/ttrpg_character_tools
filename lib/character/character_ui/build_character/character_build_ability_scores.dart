@@ -446,7 +446,7 @@ class _CharacterBuildAbilityScoresState
                 ),
               ),
             ],
-          if (bonusProviders.isNotEmpty)
+          if (bonusProviders.any((x) => x.ability != null))
             Padding(
               padding: const EdgeInsets.only(
                 left: 16.0,

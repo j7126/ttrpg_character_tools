@@ -81,6 +81,12 @@ class _CharacterPageState extends State<CharacterPage> {
       if (race != null) {
         allRulesObjs.add((race, null));
       }
+
+      // subRace
+      var subRace = currentCharacter!.getSubRace();
+      if (subRace != null) {
+        allRulesObjs.add((subRace, null));
+      }
     });
   }
 
