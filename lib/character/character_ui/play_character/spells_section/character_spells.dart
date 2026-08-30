@@ -112,6 +112,7 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                       style: TextStyle(fontSize: 18),
                       fittedBox: true,
                       waitDuration: Duration(milliseconds: 500),
+                      linkMode: LinkTooltipViewMode.link,
                     ),
                   ),
                 ],

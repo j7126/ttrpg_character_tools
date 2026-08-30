@@ -3,9 +3,12 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:render_ttrpg_data/data_views/5e/class_view.dart';
+import 'package:render_ttrpg_data/data_views/5e/subclass_view.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/subclass.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
+import 'package:render_ttrpg_data/widgets/link_with_content_tooltip.dart';
 import 'package:ttrpg_character_tools/data_loader.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
@@ -135,7 +138,7 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
         ],
       ),
       content: SizedBox(
-        width: min(MediaQuery.of(context).size.width - 32, 400.0),
+        width: min(MediaQuery.of(context).size.width - 32, 480.0),
         child: !DataLoader.ready
             ? SizedBox(
                 height: 100,
@@ -168,6 +171,34 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
                                       classInfo.className,
                                       style: TextStyle(fontSize: 20.0),
                                     ),
+                                    ...() {
+                                      var class5e = classInfo.getClass();
+                                      return [
+                                        if (class5e != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 8.0,
+                                            ),
+                                            child: LinkWithContentTooltip(
+                                              tooltipView: ClassView(
+                                                class5e: class5e,
+                                                card: true,
+                                                outlined: true,
+                                                scrollable: true,
+                                              ),
+                                              contentView: ClassView(
+                                                class5e: class5e,
+                                                card: false,
+                                                scrollable: false,
+                                              ),
+                                              text: "",
+                                              style: null,
+                                              linkMode:
+                                                  LinkTooltipViewMode.helpIcon,
+                                            ),
+                                          ),
+                                      ];
+                                    }(),
                                     Spacer(),
                                     IconButton(
                                       onPressed: () => removeLevel(classInfo),
@@ -212,6 +243,34 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
                                             : "No sub-class selected",
                                         style: TextStyle(fontSize: 16.0),
                                       ),
+                                      ...() {
+                                        var subClass = classInfo.getSubClass();
+                                        return [
+                                          if (subClass != null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 8.0,
+                                              ),
+                                              child: LinkWithContentTooltip(
+                                                tooltipView: SubclassView(
+                                                  subclass: subClass,
+                                                  card: true,
+                                                  outlined: true,
+                                                  scrollable: true,
+                                                ),
+                                                contentView: SubclassView(
+                                                  subclass: subClass,
+                                                  card: false,
+                                                  scrollable: false,
+                                                ),
+                                                text: "",
+                                                style: null,
+                                                linkMode: LinkTooltipViewMode
+                                                    .helpIcon,
+                                              ),
+                                            ),
+                                        ];
+                                      }(),
                                       Spacer(),
                                       IconButton(
                                         onPressed: () {
@@ -261,14 +320,41 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
                                 .map(
                                   (item) => ListTile(
                                     title: Text(item.name),
-                                    trailing: Text(
-                                      item.source,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: ColorScheme.of(
-                                          context,
-                                        ).onSurface.withAlpha(150),
-                                      ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          item.source,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: ColorScheme.of(context)
+                                                .onSurface
+                                                .withAlpha(150),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 8.0,
+                                          ),
+                                          child: LinkWithContentTooltip(
+                                            tooltipView: ClassView(
+                                              class5e: item,
+                                              card: true,
+                                              outlined: true,
+                                              scrollable: true,
+                                            ),
+                                            contentView: ClassView(
+                                              class5e: item,
+                                              card: false,
+                                              scrollable: false,
+                                            ),
+                                            text: item.name,
+                                            style: null,
+                                            linkMode:
+                                                LinkTooltipViewMode.helpIcon,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     onTap: () {
                                       setState(() {
@@ -311,14 +397,41 @@ class _ManageClassDialogState extends State<ManageClassDialog> {
                                 .map(
                                   (item) => ListTile(
                                     title: Text(item.name),
-                                    trailing: Text(
-                                      item.source,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: ColorScheme.of(
-                                          context,
-                                        ).onSurface.withAlpha(150),
-                                      ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          item.source,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: ColorScheme.of(context)
+                                                .onSurface
+                                                .withAlpha(150),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 8.0,
+                                          ),
+                                          child: LinkWithContentTooltip(
+                                            tooltipView: SubclassView(
+                                              subclass: item,
+                                              card: true,
+                                              outlined: true,
+                                              scrollable: true,
+                                            ),
+                                            contentView: SubclassView(
+                                              subclass: item,
+                                              card: false,
+                                              scrollable: false,
+                                            ),
+                                            text: item.name,
+                                            style: null,
+                                            linkMode:
+                                                LinkTooltipViewMode.helpIcon,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     onTap: () {
                                       setState(() {

@@ -1,7 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:render_ttrpg_data/data_views/5e/race_view.dart';
+import 'package:render_ttrpg_data/data_views/5e/sub_race_view.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/reference_mixin.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/race/race.dart';
+import 'package:render_ttrpg_data/widgets/link_with_content_tooltip.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
 
 class RaceField extends StatefulWidget {
@@ -13,6 +17,8 @@ class RaceField extends StatefulWidget {
 
 class _RaceFieldState extends State<RaceField> {
   final SearchController subRaceSearchController = SearchController();
+
+  Race? currentRaceCache;
 
   @override
   void dispose() {
@@ -88,12 +94,32 @@ class _RaceFieldState extends State<RaceField> {
             .map(
               (item) => ListTile(
                 title: Text(item.name),
-                trailing: Text(
-                  item.source,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: ColorScheme.of(context).onSurface.withAlpha(150),
-                  ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item.source,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: ColorScheme.of(context).onSurface.withAlpha(150),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: LinkWithContentTooltip(
+                        tooltipView: RaceView(
+                          race: item,
+                          card: true,
+                          outlined: true,
+                          scrollable: true,
+                        ),
+                        contentView: RaceView(race: item, card: false),
+                        text: "",
+                        style: null,
+                        linkMode: LinkTooltipViewMode.helpIcon,
+                      ),
+                    ),
+                  ],
                 ),
                 onTap: () {
                   controller.closeView(null);
@@ -112,6 +138,7 @@ class _RaceFieldState extends State<RaceField> {
                   characterContext.changed();
                   characterContext.rebuildRulesData();
                   if (availableSubRaces.any((x) => x != autoSubRace)) {
+                    currentRaceCache = item;
                     subRaceSearchController.openView();
                   }
                 },
@@ -146,12 +173,37 @@ class _RaceFieldState extends State<RaceField> {
             .map(
               (item) => ListTile(
                 title: Text(item.variableName),
-                trailing: Text(
-                  item.source,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: ColorScheme.of(context).onSurface.withAlpha(150),
-                  ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      item.source,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: ColorScheme.of(context).onSurface.withAlpha(150),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: LinkWithContentTooltip(
+                        tooltipView: SubRaceView(
+                          race: currentRaceCache!,
+                          subRace: item,
+                          card: true,
+                          outlined: true,
+                          scrollable: true,
+                        ),
+                        contentView: SubRaceView(
+                          race: currentRaceCache!,
+                          subRace: item,
+                          card: false,
+                        ),
+                        text: "",
+                        style: null,
+                        linkMode: LinkTooltipViewMode.helpIcon,
+                      ),
+                    ),
+                  ],
                 ),
                 onTap: () {
                   controller.closeView(null);
