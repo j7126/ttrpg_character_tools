@@ -28,7 +28,7 @@ dependencies:
     #path: ../render_ttrpg_data
     git:
       url: https://github.com/j7126/render_ttrpg_data
-      ref: c96358d5983e7dcea10eb64a08ac1bc42e5ed1a9
+      ref: c6d7e09a1cbdb042bd604e2789f2b83a3f032083
   crypto: ^3.0.7
   file_picker: ^10.3.10
   macos_secure_bookmarks: ^0.2.1
