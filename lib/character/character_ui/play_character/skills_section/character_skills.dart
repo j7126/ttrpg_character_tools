@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/calculated_value/calculated_model_view.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/field_reset_button.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_extension.dart';
-import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_skills.pb.dart';
 
 class CharacterSkillsWidget extends StatelessWidget {
@@ -84,7 +84,9 @@ class CharacterSkillsWidget extends StatelessWidget {
                       withSign: true,
                       inputBorder: UnderlineInputBorder(),
                       textStyle: TextStyle(fontSize: 14),
-                      value: characterContext.character.getSkillModifier(skill),
+                      value: characterContext.character
+                          .getSkillModifier(skill)
+                          .value,
                       valueChanged: (val) {
                         characterContext.character.skills.overrides[skill
                                 .value] =
@@ -97,9 +99,24 @@ class CharacterSkillsWidget extends StatelessWidget {
                           .containsKey(skill.value),
                     ),
                   ),
-                  Text(skill.name),
-                  Text(" (${skill.associatedStat.shortName})"),
+                  Text(skill.displayName),
                   Spacer(),
+                  Tooltip(
+                    richMessage: WidgetSpan(
+                      child: CalculatedModelView(
+                        model: characterContext.character.getSkillModifier(
+                          skill,
+                        ),
+                        showValueSign: true,
+                      ),
+                    ),
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.help_outline,
+                      size: 20,
+                      color: ColorScheme.of(context).onSurface.withAlpha(150),
+                    ),
+                  ),
                   if (characterContext.character.skills.overrides.containsKey(
                     skill.value,
                   ))

@@ -32,7 +32,7 @@ extension CharacterSkillTypeExtension on CharacterSkill {
     }
   }
 
-  String get name {
+  String get displayName {
     return switch (this) {
       CharacterSkill.Acrobatics => "Acrobatics",
       CharacterSkill.AnimalHandling => "Animal Handling",
@@ -48,6 +48,7 @@ extension CharacterSkillTypeExtension on CharacterSkill {
       CharacterSkill.Perception => "Perception",
       CharacterSkill.Performance => "Performance",
       CharacterSkill.Persuasion => "Persuasion",
+      CharacterSkill.Religion => "Religion",
       CharacterSkill.SleightOfHand => "Sleight of Hand",
       CharacterSkill.Stealth => "Stealth",
       CharacterSkill.Survival => "Survival",

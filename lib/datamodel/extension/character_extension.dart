@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/race/race.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/race/subrace/sub_race.dart';
+import 'package:ttrpg_character_tools/character/character_ui/calculated_value/integer_calculated_model.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_class_info_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_skill_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
@@ -46,15 +47,34 @@ extension CharacterExtension on Character {
         skills.proficencyCalculated.contains(skill);
   }
 
-  int getSkillModifier(CharacterSkill skill) {
+  IntegerCalculatedModel getSkillModifier(CharacterSkill skill) {
+    List<IntegerCalculatedModel> children = [];
+
     if (skills.overrides.containsKey(skill.value)) {
-      return skills.overrides[skill.value]!;
+      return IntegerCalculatedModel(
+        value: skills.overrides[skill.value]!,
+        name: "${skill.displayName} (Override)",
+      );
     }
     var modifier = stats.getStatModifier(skill.associatedStat);
+    children.add(
+      IntegerCalculatedModel(
+        value: modifier,
+        name: skill.associatedStat.name,
+      ),
+    );
     if (isProficient(skill)) {
       modifier += proficiencyBonus;
+      children.add(
+        IntegerCalculatedModel(value: proficiencyBonus, name: "Proficency"),
+      );
     }
-    return modifier;
+
+    return IntegerCalculatedModel(
+      value: modifier,
+      name: skill.displayName,
+      children: children,
+    );
   }
 
   bool isProficientSave(StatsType stat) {
