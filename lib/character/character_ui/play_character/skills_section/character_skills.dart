@@ -53,27 +53,12 @@ class CharacterSkillsWidget extends StatelessWidget {
                 children: [
                   Checkbox(
                     activeColor:
-                        characterContext.character.skills.proficencyCalculated
+                        characterContext.character.skills.currentProficency
                             .contains(skill)
                         ? null
                         : ColorScheme.of(context).tertiary,
                     value: characterContext.character.isProficient(skill),
-                    onChanged:
-                        !characterContext.character.isProficient(skill) ||
-                            characterContext.character.skills.proficency
-                                .contains(skill)
-                        ? (value) {
-                            if (value == true) {
-                              characterContext.character.skills.proficency.add(
-                                skill,
-                              );
-                            } else {
-                              characterContext.character.skills.proficency
-                                  .remove(skill);
-                            }
-                            characterContext.changed();
-                          }
-                        : null,
+                    onChanged: null,
                   ),
                   SizedBox(
                     width: 36,

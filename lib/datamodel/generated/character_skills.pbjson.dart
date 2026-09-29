@@ -54,12 +54,12 @@ const CharacterSkills$json = {
   '1': 'CharacterSkills',
   '2': [
     {
-      '1': 'proficency',
+      '1': 'currentProficency',
       '3': 1,
       '4': 3,
       '5': 14,
       '6': '.ttrpg_character_tools.CharacterSkill',
-      '10': 'proficency'
+      '10': 'currentProficency'
     },
     {
       '1': 'overrides',
@@ -70,26 +70,23 @@ const CharacterSkills$json = {
       '10': 'overrides'
     },
     {
-      '1': 'proficencyCalculated',
+      '1': 'overrideProficency',
       '3': 3,
       '4': 3,
       '5': 14,
       '6': '.ttrpg_character_tools.CharacterSkill',
-      '10': 'proficencyCalculated'
+      '10': 'overrideProficency'
     },
     {
       '1': 'proficencyChoices',
       '3': 4,
       '4': 3,
       '5': 11,
-      '6': '.ttrpg_character_tools.CharacterSkills.ProficencyChoicesEntry',
+      '6': '.ttrpg_character_tools.CharacterProficencyChoice',
       '10': 'proficencyChoices'
     },
   ],
-  '3': [
-    CharacterSkills_OverridesEntry$json,
-    CharacterSkills_ProficencyChoicesEntry$json
-  ],
+  '3': [CharacterSkills_OverridesEntry$json],
 };
 
 @$core.Deprecated('Use characterSkillsDescriptor instead')
@@ -102,32 +99,53 @@ const CharacterSkills_OverridesEntry$json = {
   '7': {'7': true},
 };
 
-@$core.Deprecated('Use characterSkillsDescriptor instead')
-const CharacterSkills_ProficencyChoicesEntry$json = {
-  '1': 'ProficencyChoicesEntry',
-  '2': [
-    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
-    {
-      '1': 'value',
-      '3': 2,
-      '4': 1,
-      '5': 14,
-      '6': '.ttrpg_character_tools.CharacterSkill',
-      '10': 'value'
-    },
-  ],
-  '7': {'7': true},
-};
-
 /// Descriptor for `CharacterSkills`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List characterSkillsDescriptor = $convert.base64Decode(
-    'Cg9DaGFyYWN0ZXJTa2lsbHMSRQoKcHJvZmljZW5jeRgBIAMoDjIlLnR0cnBnX2NoYXJhY3Rlcl'
-    '90b29scy5DaGFyYWN0ZXJTa2lsbFIKcHJvZmljZW5jeRJTCglvdmVycmlkZXMYAiADKAsyNS50'
-    'dHJwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU2tpbGxzLk92ZXJyaWRlc0VudHJ5Uglvdm'
-    'VycmlkZXMSWQoUcHJvZmljZW5jeUNhbGN1bGF0ZWQYAyADKA4yJS50dHJwZ19jaGFyYWN0ZXJf'
-    'dG9vbHMuQ2hhcmFjdGVyU2tpbGxSFHByb2ZpY2VuY3lDYWxjdWxhdGVkEmsKEXByb2ZpY2VuY3'
-    'lDaG9pY2VzGAQgAygLMj0udHRycGdfY2hhcmFjdGVyX3Rvb2xzLkNoYXJhY3RlclNraWxscy5Q'
-    'cm9maWNlbmN5Q2hvaWNlc0VudHJ5UhFwcm9maWNlbmN5Q2hvaWNlcxo8Cg5PdmVycmlkZXNFbn'
-    'RyeRIQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgBGmsKFlByb2Zp'
-    'Y2VuY3lDaG9pY2VzRW50cnkSEAoDa2V5GAEgASgJUgNrZXkSOwoFdmFsdWUYAiABKA4yJS50dH'
-    'JwZ19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU2tpbGxSBXZhbHVlOgI4AQ==');
+    'Cg9DaGFyYWN0ZXJTa2lsbHMSUwoRY3VycmVudFByb2ZpY2VuY3kYASADKA4yJS50dHJwZ19jaG'
+    'FyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU2tpbGxSEWN1cnJlbnRQcm9maWNlbmN5ElMKCW92ZXJy'
+    'aWRlcxgCIAMoCzI1LnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0ZXJTa2lsbHMuT3Zlcn'
+    'JpZGVzRW50cnlSCW92ZXJyaWRlcxJVChJvdmVycmlkZVByb2ZpY2VuY3kYAyADKA4yJS50dHJw'
+    'Z19jaGFyYWN0ZXJfdG9vbHMuQ2hhcmFjdGVyU2tpbGxSEm92ZXJyaWRlUHJvZmljZW5jeRJeCh'
+    'Fwcm9maWNlbmN5Q2hvaWNlcxgEIAMoCzIwLnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0'
+    'ZXJQcm9maWNlbmN5Q2hvaWNlUhFwcm9maWNlbmN5Q2hvaWNlcxo8Cg5PdmVycmlkZXNFbnRyeR'
+    'IQCgNrZXkYASABKAVSA2tleRIUCgV2YWx1ZRgCIAEoBVIFdmFsdWU6AjgB');
+
+@$core.Deprecated('Use characterProficencyChoiceDescriptor instead')
+const CharacterProficencyChoice$json = {
+  '1': 'CharacterProficencyChoice',
+  '2': [
+    {'1': 'providerRef', '3': 1, '4': 1, '5': 9, '10': 'providerRef'},
+    {
+      '1': 'fixed',
+      '3': 2,
+      '4': 3,
+      '5': 14,
+      '6': '.ttrpg_character_tools.CharacterSkill',
+      '10': 'fixed'
+    },
+    {
+      '1': 'choices',
+      '3': 3,
+      '4': 3,
+      '5': 14,
+      '6': '.ttrpg_character_tools.CharacterSkill',
+      '10': 'choices'
+    },
+    {
+      '1': 'choicesAny',
+      '3': 4,
+      '4': 3,
+      '5': 14,
+      '6': '.ttrpg_character_tools.CharacterSkill',
+      '10': 'choicesAny'
+    },
+  ],
+};
+
+/// Descriptor for `CharacterProficencyChoice`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List characterProficencyChoiceDescriptor = $convert.base64Decode(
+    'ChlDaGFyYWN0ZXJQcm9maWNlbmN5Q2hvaWNlEiAKC3Byb3ZpZGVyUmVmGAEgASgJUgtwcm92aW'
+    'RlclJlZhI7CgVmaXhlZBgCIAMoDjIlLnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaGFyYWN0ZXJT'
+    'a2lsbFIFZml4ZWQSPwoHY2hvaWNlcxgDIAMoDjIlLnR0cnBnX2NoYXJhY3Rlcl90b29scy5DaG'
+    'FyYWN0ZXJTa2lsbFIHY2hvaWNlcxJFCgpjaG9pY2VzQW55GAQgAygOMiUudHRycGdfY2hhcmFj'
+    'dGVyX3Rvb2xzLkNoYXJhY3RlclNraWxsUgpjaG9pY2VzQW55');

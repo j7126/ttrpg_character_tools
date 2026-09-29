@@ -38,6 +38,9 @@ class _CharacterPageState extends State<CharacterPage> {
       setState(() {
         refreshAllRulesObjs();
         rebuildChoices();
+        if (DataLoader.ready) {
+          currentCharacter?.applyRulesData(allRulesObjs);
+        }
       });
     }
   }
@@ -86,6 +89,12 @@ class _CharacterPageState extends State<CharacterPage> {
       var subRace = currentCharacter!.getSubRace();
       if (subRace != null) {
         allRulesObjs.add((subRace, null));
+      }
+
+      // background
+      var background = currentCharacter!.getBackground();
+      if (background != null) {
+        allRulesObjs.add((background, null));
       }
     });
   }

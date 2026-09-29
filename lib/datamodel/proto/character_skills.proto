@@ -2,10 +2,17 @@ syntax = "proto3";
 package ttrpg_character_tools;
 
 message CharacterSkills {
-  repeated CharacterSkill proficency = 1;
+  repeated CharacterSkill currentProficency = 1;
   map<int32, int32> overrides = 2;
-  repeated CharacterSkill proficencyCalculated = 3;
-  map<string, CharacterSkill> proficencyChoices = 4;
+  repeated CharacterSkill overrideProficency = 3;
+  repeated CharacterProficencyChoice proficencyChoices = 4;
+}
+
+message CharacterProficencyChoice {
+  string providerRef = 1;
+  repeated CharacterSkill fixed = 2;
+  repeated CharacterSkill choices = 3;
+  repeated CharacterSkill choicesAny = 4;
 }
 
 enum CharacterSkill {

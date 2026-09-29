@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/background/background.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class_feature.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/subclass.dart';
@@ -41,8 +42,13 @@ class DataLoader {
     await loadClasses();
     await loadConditions();
     await loadRaces();
+    await loadBackgrounds();
     _hydrateReferences();
     readyNotifier.value = true;
+
+    if (errors.isNotEmpty && kDebugMode) {
+      throw Exception();
+    }
   }
 
   static Future loadItems() async {
@@ -265,6 +271,26 @@ class DataLoader {
           ),
         );
       }
+    }
+  }
+
+  static Future loadBackgrounds() async {
+    var path = 'backgrounds.json';
+    try {
+      var json = await loadJson(path);
+      var backgrounds = json["background"] as List<dynamic>;
+      DataModel5e.backgrounds.addAll(
+        backgrounds.map((x) => Background.fromJson(x)),
+      );
+    } catch (e) {
+      errors.add(
+        DataLoadError(
+          itemType: 'race',
+          itemName: 'race',
+          filePath: path,
+          error: e.toString(),
+        ),
+      );
     }
   }
 

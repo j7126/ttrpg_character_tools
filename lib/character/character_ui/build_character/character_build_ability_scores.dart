@@ -10,6 +10,7 @@ import 'package:render_ttrpg_data/theme/text_styles.dart';
 import 'package:render_ttrpg_data/util/int_extension.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/stats_section/character_stats.dart';
+import 'package:ttrpg_character_tools/datamodel/extension/character_stats_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/character_stats_method_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/extension/stats_type_extension.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_stats.pb.dart';
@@ -75,6 +76,14 @@ class _CharacterBuildAbilityScoresState
                   ? val.clamp(0, 20)
                   : val.clamp(8, 15);
             }
+          } else if (widget.context.character.stats.method !=
+              StatsMethod.StatsStandardArray) {
+            widget.context.character.stats.base[stat.value] =
+                switch (widget.context.character.stats.method) {
+                  StatsMethod.StatsPointBuy => 8,
+                  StatsMethod.StatsManual => 0,
+                  _ => 0,
+                };
           }
         }
       }
@@ -88,21 +97,7 @@ class _CharacterBuildAbilityScoresState
       return;
     }
 
-    for (var stat in StatsType.values) {
-      var val = widget.context.character.stats.base[stat.value];
-      if (val != null) {
-        var currentVal = val;
-        for (var selection
-            in widget.context.character.stats.characterStatsSelections) {
-          currentVal += selection.currentMods[stat.value] ?? 0;
-          currentVal += selection.fixedMods[stat.value] ?? 0;
-        }
-        currentVal = currentVal.clamp(0, 20);
-        widget.context.character.stats.current[stat.value] = currentVal;
-      } else {
-        widget.context.character.stats.current.remove(stat.value);
-      }
-    }
+    widget.context.character.stats.applyChoices();
 
     widget.context.changed();
   }
@@ -141,20 +136,6 @@ class _CharacterBuildAbilityScoresState
     _statsChanged();
   }
 
-  void _cleanupUnapplied(
-    Map<String, CharacterStatsSelection> unappliedSelections,
-  ) async {
-    await Future.pause();
-    if (!mounted) {
-      return;
-    }
-
-    for (var val in unappliedSelections.values) {
-      widget.context.character.stats.characterStatsSelections.remove(val);
-    }
-    _statsChanged();
-  }
-
   @override
   void initState() {
     if (hasValues) {
@@ -181,7 +162,7 @@ class _CharacterBuildAbilityScoresState
         .nonNulls
         .toList();
 
-    var unappliedSelections = Map<String, CharacterStatsSelection>.fromEntries(
+    var statsSelections = Map<String, CharacterStatsSelection>.fromEntries(
       widget.context.character.stats.characterStatsSelections.map(
         (x) => MapEntry(x.providerRef, x),
       ),
@@ -304,7 +285,7 @@ class _CharacterBuildAbilityScoresState
               },
             ),
           ),
-          if (widget.context.character.stats.hasMethod())
+          if (widget.context.character.stats.hasMethod()) ...[
             if (widget.context.character.stats.method ==
                 StatsMethod.StatsManual)
               Padding(
@@ -446,129 +427,127 @@ class _CharacterBuildAbilityScoresState
                 ),
               ),
             ],
-          if (bonusProviders.any((x) => x.ability != null))
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                top: 4.0,
-                bottom: 8.0,
+            if (bonusProviders.any((x) => x.ability != null))
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 16.0,
+                  right: 16.0,
+                  top: 4.0,
+                  bottom: 8.0,
+                ),
+                child: Text(
+                  "Ability score bonuses",
+                  style: TextStyles.of(context).headline2
+                      ?.copyWith(fontWeight: FontWeight.normal),
+                ),
               ),
-              child: Text(
-                "Ability score bonuses",
-                style: TextStyles.of(context).headline2
-                    ?.copyWith(fontWeight: FontWeight.normal),
-              ),
-            ),
-          ...() {
-            var builder = <Widget>[];
-            for (var bonusProvider in bonusProviders) {
-              var ability = bonusProvider.ability;
-              if (ability == null &&
-                  bonusProvider is Race &&
-                  bonusProvider.lineage != null) {
-                ability = [
-                  AbilityBonus(
-                    choose: AbilityBonusChoose(
-                      from: Ability.values,
-                      amount: 3,
-                      count: -1,
-                    ),
-                  ),
-                ];
-              }
-              if (ability == null || ability.isEmpty) {
-                continue;
-              }
-              var selection = unappliedSelections[bonusProvider.refString];
-              if (selection != null) {
-                unappliedSelections.remove(selection.providerRef);
-              } else {
-                selection = CharacterStatsSelection(
-                  providerRef: bonusProvider.refString,
-                );
-                widget.context.character.stats.characterStatsSelections.add(
-                  selection,
-                );
-              }
-
-              builder.add(
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16.0,
-                    bottom: 16.0,
-                    right: 16.0,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextView(
-                            bonusProvider.refString,
-                            hintEntities: [bonusProvider],
-                            style: TextStyle(
-                              fontSize: TextStyles.of(context)
-                                  .headline2
-                                  ?.fontSize,
-                            ),
-                          ),
-                          Gap(8.0),
-                          Text(
-                            ability
-                                .map((bonus) => bonus.getDisplayText())
-                                .join("; "),
-                          ),
-                        ],
+            ...() {
+              var builder = <Widget>[];
+              for (var bonusProvider in bonusProviders) {
+                var ability = bonusProvider.ability;
+                if (ability == null &&
+                    bonusProvider is Race &&
+                    bonusProvider.lineage != null) {
+                  ability = [
+                    AbilityBonus(
+                      choose: AbilityBonusChoose(
+                        from: Ability.values,
+                        amount: 3,
+                        count: -1,
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          for (var ab in Ability.values)
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ...bonusAbilitySelectWidget(
-                                    selection,
-                                    bonusProvider,
-                                    ability.first,
-                                    ab,
-                                  ),
-                                ],
+                    ),
+                  ];
+                }
+                if (ability == null || ability.isEmpty) {
+                  continue;
+                }
+                var selection = statsSelections[bonusProvider.refString];
+                if (selection == null) {
+                  selection = CharacterStatsSelection(
+                    providerRef: bonusProvider.refString,
+                  );
+                  widget.context.character.stats.characterStatsSelections.add(
+                    selection,
+                  );
+                }
+
+                builder.add(
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      bottom: 16.0,
+                      right: 16.0,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextView(
+                              bonusProvider.refString,
+                              hintEntities: [bonusProvider],
+                              style: TextStyle(
+                                fontSize: TextStyles.of(context)
+                                    .headline2
+                                    ?.fontSize,
                               ),
                             ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          for (var ab in Ability.values)
-                            Expanded(
-                              child: Text(ab.name, textAlign: TextAlign.center),
+                            Gap(8.0),
+                            Text(
+                              ability
+                                  .map((bonus) => bonus.getDisplayText())
+                                  .join("; "),
                             ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            for (var ab in Ability.values)
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ...bonusAbilitySelectWidget(
+                                      selection,
+                                      bonusProvider,
+                                      ability.first,
+                                      ab,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            for (var ab in Ability.values)
+                              Expanded(
+                                child: Text(
+                                  ab.name,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }
+                );
+              }
 
-            // we need to clean up any selections that didn't match. Not sure if this is the best place for this.
-            if (unappliedSelections.isNotEmpty) {
-              _cleanupUnapplied(unappliedSelections);
-            }
-
-            return builder;
-          }(),
-          Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CharacterStatsWidget(isEditingBase: false),
-          ),
+              return builder;
+            }(),
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CharacterStatsWidget(isEditingBase: false),
+            ),
+          ] else
+            Gap(12.0),
         ],
       ),
     );

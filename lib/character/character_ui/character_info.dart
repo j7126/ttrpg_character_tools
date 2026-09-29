@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
+import 'package:ttrpg_character_tools/character/character_ui/background_field.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
-import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/class_selection/class_field.dart';
 import 'package:ttrpg_character_tools/character/character_ui/race_field.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/options.pb.dart';
@@ -17,19 +17,7 @@ class CharacterInfoWidget extends StatelessWidget {
       children: [
         Expanded(child: ClassField()),
         Expanded(child: RaceField()),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFieldBase(
-              label: "Background",
-              value: characterContext.character.background,
-              valueChanged: (val) {
-                characterContext.character.background = val;
-                characterContext.changed();
-              },
-            ),
-          ),
-        ),
+        Expanded(child: BackgroundField()),
         if (characterContext.character.options.hasLevelingMethod() &&
             characterContext.character.options.levelingMethod ==
                 LevelingMethod.XP)
