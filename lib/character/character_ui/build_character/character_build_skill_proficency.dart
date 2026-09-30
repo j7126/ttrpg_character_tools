@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:render_ttrpg_data/data_views/generic/entry_view/text_view.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/skill_proficiency/skill_proficiency_mixin.dart';
 import 'package:render_ttrpg_data/theme/text_styles.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
@@ -53,7 +54,15 @@ class _CharacterBuildSkillProficencyState
 
   @override
   Widget build(BuildContext context) {
+    var initialClassName =
+        widget.context.character.classInfo.firstOrNull?.className;
     var bonusProviders = widget.context.allRulesObjs
+        .where(
+          (x) =>
+              !(x.$1 is Class5e &&
+                  initialClassName != null &&
+                  x.$1.name != initialClassName),
+        )
         .map((x) {
           var obj = x.$1;
           return obj is SkillProficiencyMixin &&

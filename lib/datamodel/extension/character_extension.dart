@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/background/background.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/ability_bonus/ability_bonus_mixin.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/skill_proficiency/skill_proficiency_mixin.dart';
@@ -164,7 +165,14 @@ extension CharacterExtension on Character {
 
   void applyRulesData(List<(dynamic, CharacterClassInfo?)> allRulesObjs) {
     // skill proficiency
+    var initialClassName = classInfo.firstOrNull?.className;
     var skillProficiencyProviders = allRulesObjs
+        .where(
+          (x) =>
+              !(x.$1 is Class5e &&
+                  initialClassName != null &&
+                  x.$1.name != initialClassName),
+        )
         .map((x) {
           var obj = x.$1;
           return obj is SkillProficiencyMixin &&
