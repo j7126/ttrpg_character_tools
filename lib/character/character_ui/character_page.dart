@@ -1,5 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/generic/entry.dart';
+import 'package:render_ttrpg_data/datamodel/5e/data/interface/feature_like.dart';
 import 'package:ttrpg_character_tools/adaptive_info.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_manager.dart';
@@ -95,6 +98,35 @@ class _CharacterPageState extends State<CharacterPage> {
       var background = currentCharacter!.getBackground();
       if (background != null) {
         allRulesObjs.add((background, null));
+      }
+
+      // "options" optional features
+      for (var obj in allRulesObjs.toList()) {
+        var feat = obj.$1;
+        if (feat is FeatureLike) {
+          var cbc = currentCharacter!.characterBuildChoices[feat.refString];
+          if (cbc == null) {
+            continue;
+          }
+          var options = feat.entries.firstWhereOrNull(
+            (x) => x.type == FeatureEntryType.options,
+          );
+          if (options == null) {
+            continue;
+          }
+          var option = options.entries?.firstWhereOrNull(
+            (x) =>
+                x.referencedOptionalFeature != null &&
+                cbc.choice.any(
+                  (choice) =>
+                      x.referencedOptionalFeature!.refString ==
+                      choice.choiceReference,
+                ),
+          );
+          if (option?.referencedOptionalFeature != null) {
+            allRulesObjs.add((option?.referencedOptionalFeature, obj.$2));
+          }
+        }
       }
     });
   }

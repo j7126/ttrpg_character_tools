@@ -274,6 +274,11 @@ class _CharacterSpellsState extends State<CharacterSpells> {
                 var additionalKnown = info.additionalKnownSpells
                     .map((x) => (x, spellsCache[x.info]))
                     .where((x) => x.$2 != null)
+                    .where(
+                      (x) =>
+                          !x.$1.info.hasSpellClassName() ||
+                          info.class5e.name == x.$1.info.spellClassName,
+                    )
                     .map((x) => (x.$1, x.$2!))
                     .toList();
                 var knownCantrips = characterContext

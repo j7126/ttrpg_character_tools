@@ -203,7 +203,7 @@ class ClassSpellcastingInfo {
     List<String> expandedAvailableSpells,
     Map<int, List<String>> expandedAvailableSpellsBySlotLevel,
   ) {
-    for (var (provider, _) in context.allRulesObjs) {
+    for (var (provider, classInfo) in context.allRulesObjs) {
       if (provider is! AdditionalSpellsMixin ||
           provider.additionalSpells == null) {
         continue;
@@ -230,18 +230,44 @@ class ClassSpellcastingInfo {
       if (additionalSpells != null) {
         var known = additionalSpells["known"];
         var expanded = additionalSpells["expanded"];
-        var hasClassInfo = provider is SubClass;
-        var classInfo = hasClassInfo
-            ? context.character.classInfo.firstWhereOrNull(
-                (x) => x.className == provider.className,
-              )
-            : null;
-        if (hasClassInfo && classInfo == null) {
-          return;
-        }
+        var innate = additionalSpells["innate"];
 
         // Known spells
         if (known is Map<String, dynamic>) {
+          void addKnown(List spells) {
+            for (var spellString in spells) {
+              if (spellString is! String) {
+                continue;
+              }
+              var spell = DataModel5e.spells.firstWhereOrNull(
+                (x) => x.name.toLowerCase() == spellString.toLowerCase(),
+              );
+              if (spell != null &&
+                  !additionalKnownSpells.any(
+                    (x) =>
+                        x.info.spellName.toLowerCase() ==
+                        spellString.toLowerCase(),
+                  )) {
+                additionalKnownSpells.add(
+                  KnownSpellContext(
+                    info: CharacterSpellInfo(
+                      spellName: spell.name,
+                      spellSource: spell.source,
+                      spellClassName: classInfo?.className,
+                      spellClassSource: classInfo?.classSource,
+                    ),
+                    additionalKnownType: AdditionalKnownSpellType.known,
+                    sourceRef: provider.refString,
+                  ),
+                );
+              }
+            }
+          }
+
+          var lvlKnown = known["_"];
+          if (lvlKnown is List) {
+            addKnown(lvlKnown);
+          }
           for (
             var level = 1;
             level <= (classInfo?.classLevel ?? context.character.totalLevel);
@@ -249,33 +275,7 @@ class ClassSpellcastingInfo {
           ) {
             var lvlKnown = known[level.toString()];
             if (lvlKnown is List) {
-              for (var knownString in lvlKnown) {
-                if (knownString is! String) {
-                  continue;
-                }
-                var spell = DataModel5e.spells.firstWhereOrNull(
-                  (x) => x.name.toLowerCase() == knownString.toLowerCase(),
-                );
-                if (spell != null &&
-                    !additionalKnownSpells.any(
-                      (x) =>
-                          x.info.spellName.toLowerCase() ==
-                          knownString.toLowerCase(),
-                    )) {
-                  additionalKnownSpells.add(
-                    KnownSpellContext(
-                      info: CharacterSpellInfo(
-                        spellName: spell.name,
-                        spellSource: spell.source,
-                        spellClassName: classInfo?.className,
-                        spellClassSource: classInfo?.classSource,
-                      ),
-                      additionalKnownType: AdditionalKnownSpellType.known,
-                      sourceRef: provider.refString,
-                    ),
-                  );
-                }
-              }
+              addKnown(lvlKnown);
             }
           }
         }
@@ -314,6 +314,73 @@ class ClassSpellcastingInfo {
                   lst.add(item);
                 }
               }
+            }
+          }
+        }
+
+        // Innate spells
+        if (innate is Map<String, dynamic>) {
+          void addInnate(Map<String, dynamic> spells) {
+            for (var type in AdditionalKnownSpellInnateType.values) {
+              var innateSpell = spells[type.name];
+              List? spellStringList;
+              int? qty = 0;
+              if (innateSpell != null && innateSpell is Map<String, dynamic>) {
+                for (var qtyKvp in innateSpell.entries) {
+                  qty = int.tryParse(qtyKvp.key);
+                  if (qty != null && qtyKvp.value is List) {
+                    spellStringList = qtyKvp.value;
+                  }
+                }
+              } else if (innateSpell != null && innateSpell is List) {
+                spellStringList = innateSpell;
+              }
+              if (spellStringList != null) {
+                for (var spellString in spellStringList) {
+                  if (spellString is! String) {
+                    continue;
+                  }
+                  var spell = DataModel5e.spells.firstWhereOrNull(
+                    (x) => x.name.toLowerCase() == spellString.toLowerCase(),
+                  );
+                  if (spell != null &&
+                      !additionalKnownSpells.any(
+                        (x) =>
+                            x.info.spellName.toLowerCase() ==
+                            spellString.toLowerCase(),
+                      )) {
+                    additionalKnownSpells.add(
+                      KnownSpellContext(
+                        info: CharacterSpellInfo(
+                          spellName: spell.name,
+                          spellSource: spell.source,
+                          spellClassName: classInfo?.className,
+                          spellClassSource: classInfo?.classSource,
+                        ),
+                        additionalKnownType: AdditionalKnownSpellType.innate,
+                        sourceRef: provider.refString,
+                        innateQty: qty ?? 0,
+                        innateType: type,
+                      ),
+                    );
+                  }
+                }
+              }
+            }
+          }
+
+          var lvlInnate = innate["_"];
+          if (lvlInnate is Map<String, dynamic>) {
+            addInnate(lvlInnate);
+          }
+          for (
+            var level = 1;
+            level <= (classInfo?.classLevel ?? context.character.totalLevel);
+            level++
+          ) {
+            var lvlInnate = innate[level.toString()];
+            if (lvlInnate is Map<String, dynamic>) {
+              addInnate(lvlInnate);
             }
           }
         }
