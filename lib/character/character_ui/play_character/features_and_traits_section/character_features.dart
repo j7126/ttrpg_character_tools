@@ -136,8 +136,7 @@ class _CharacterFeaturesState extends State<CharacterFeatures> {
                                 ),
                                 child: CharacterChoiceCard(
                                   choice: choice,
-                                  character: characterContext.character,
-                                  changed: characterContext.changed,
+                                  characterContext: characterContext,
                                   hasExpansionPanel: false,
                                   scrollable: true,
                                   card: false,

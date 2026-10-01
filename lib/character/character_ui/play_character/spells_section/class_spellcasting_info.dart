@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/class/class.dart';
-import 'package:render_ttrpg_data/datamodel/5e/data/class/subclass.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/additional_spells_mixin.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';

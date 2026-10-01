@@ -4,24 +4,22 @@ import 'package:render_ttrpg_data/datamodel/5e/data/generic/entry.dart';
 import 'package:render_ttrpg_data/theme/text_style_extension.dart';
 import 'package:render_ttrpg_data/theme/text_styles.dart';
 import 'package:render_ttrpg_data/widgets/fixed_thumb_scroll_view.dart';
+import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/build_character/character_choice.dart';
-import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_build_choice.pb.dart';
 
 class CharacterChoiceCard extends StatefulWidget {
   const CharacterChoiceCard({
     super.key,
     required this.choice,
-    required this.character,
-    required this.changed,
+    required this.characterContext,
     this.hasExpansionPanel = true,
     this.scrollable = false,
     this.card = true,
   });
 
   final CharacterChoice choice;
-  final Character character;
-  final Function() changed;
+  final CharacterContext characterContext;
   final bool hasExpansionPanel;
   final bool scrollable;
   final bool card;
@@ -40,7 +38,10 @@ class _CharacterChoiceCardState extends State<CharacterChoiceCard> {
     }
 
     // get the choice obj for this choice
-    var obj = widget.character.characterBuildChoices[widget.choice.reference];
+    var obj = widget
+        .characterContext
+        .character
+        .characterBuildChoices[widget.choice.reference];
     var priorLen = obj?.choice.length ?? 0;
     if (obj == null) {
       // create it if not exists
@@ -49,7 +50,10 @@ class _CharacterChoiceCardState extends State<CharacterChoiceCard> {
           choice: [val!],
           maxSelectedQty: widget.choice.chooseQty,
         );
-        widget.character.characterBuildChoices[widget.choice.reference] = obj;
+        widget.characterContext.character.characterBuildChoices[widget
+                .choice
+                .reference] =
+            obj;
       }
     } else {
       // update maxSelectedQty
@@ -81,14 +85,17 @@ class _CharacterChoiceCardState extends State<CharacterChoiceCard> {
       hasBeenAutoCollapsed = true;
     }
     setState(() {
-      widget.changed();
+      widget.characterContext.changed();
+      widget.characterContext.rebuildRulesData();
     });
   }
 
   @override
   void initState() {
-    var choice =
-        widget.character.characterBuildChoices[widget.choice.reference];
+    var choice = widget
+        .characterContext
+        .character
+        .characterBuildChoices[widget.choice.reference];
     if (choice == null || choice.choice.length < widget.choice.chooseQty) {
       controller.expand();
     } else {
@@ -106,7 +113,9 @@ class _CharacterChoiceCardState extends State<CharacterChoiceCard> {
 
   @override
   Widget build(BuildContext context) {
-    var currentValue = widget.choice.getCurrentChoice(widget.character);
+    var currentValue = widget.choice.getCurrentChoice(
+      widget.characterContext.character,
+    );
 
     var children = <Widget>[
       Padding(
