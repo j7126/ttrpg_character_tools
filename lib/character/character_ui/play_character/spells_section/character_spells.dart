@@ -9,6 +9,7 @@ import 'package:render_ttrpg_data/datamodel/5e/data/spell/spell.dart';
 import 'package:render_ttrpg_data/theme/text_styles.dart';
 import 'package:render_ttrpg_data/util/int_extension.dart';
 import 'package:render_ttrpg_data/widgets/link_with_content_tooltip.dart';
+import 'package:render_ttrpg_data/widgets/tooltip_scope.dart';
 import 'package:ttrpg_character_tools/character/character_context.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/int_field_base.dart';
 import 'package:ttrpg_character_tools/character/character_ui/play_character/base_field/text_field_base.dart';
@@ -147,7 +148,34 @@ class _CharacterSpellsState extends State<CharacterSpells> {
               knownContext.sourceRef != null)
             Opacity(
               opacity: 0.4,
-              child: TextView("Innate: ${knownContext.sourceRef!}"),
+              child: Tooltip(
+                ignorePointer: false,
+                decoration: BoxDecoration(color: Colors.transparent),
+                enableTapToDismiss: false,
+                richMessage: WidgetSpan(
+                  child: TooltipScope(
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width / 2,
+                        maxHeight: MediaQuery.of(context).size.height / 2 - 32,
+                      ),
+                      child: Card.outlined(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextView(
+                            "Innate: ${knownContext.sourceRef!}${knownContext.innateType == AdditionalKnownSpellInnateType.ritual ? " (Ritual)" : ""}",
+                            style: TextStyle(height: 1.1),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.stars),
+                ),
+              ),
             ),
         ],
       );

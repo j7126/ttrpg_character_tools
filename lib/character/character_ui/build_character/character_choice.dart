@@ -1,3 +1,4 @@
+import 'package:render_ttrpg_data/datamodel/5e/data/data_model_5e.dart';
 import 'package:render_ttrpg_data/datamodel/5e/data/interface/optional_feature_progression_mixin.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character.pb.dart';
 import 'package:ttrpg_character_tools/datamodel/generated/character_build_choice.pb.dart';
@@ -67,76 +68,98 @@ class CharacterChoice {
     Map<String, List<OptionalFeatureProgression>> progression,
     int classLevel,
   ) {
-    var options = feat.entries.firstWhereOrNull(
+    var featOptions = feat.entries.firstWhereOrNull(
       (x) => x.type == FeatureEntryType.options,
     );
-    if (options != null &&
-        options.entries != null &&
-        options.count != null &&
-        options.count! > 0) {
-      var count = options.count!;
-      var hasProgression = count > 1;
-      if (progression.containsKey(feat.name)) {
-        count = 0;
-        hasProgression = true;
-        // find fixed progression
-        for (var prg in progression[feat.name]!) {
-          var progressionMap = prg.progression;
-          if (progressionMap is List<int> &&
-              classLevel <= progressionMap.length) {
-            count = progressionMap[classLevel - 1];
+    var hasOptions = false;
+    var count = 0;
+    var hasProgression = false;
+    List<CharacterBuildChoiceSelection> selections = [];
+
+    var prgs = progression[feat.name];
+    if (prgs != null && prgs.isNotEmpty) {
+      hasOptions = true;
+      hasProgression = true;
+      // find options
+      var featTypes = prgs.expand((x) => x.featureType).toSet();
+      var optionalFeatures = DataModel5e.optionalFeatures.where(
+        (feat) => feat.featureType.any(featTypes.contains),
+      );
+      selections = optionalFeatures
+          .map<CharacterBuildChoiceSelection?>(
+            (x) => CharacterBuildChoiceSelection(
+              choiceName: x.name,
+              choiceReference: x.refString,
+            ),
+          )
+          .nonNulls
+          .toList();
+      // find fixed progression
+      for (var prg in prgs) {
+        var progressionMap = prg.progression;
+        if (progressionMap is List && classLevel <= progressionMap.length) {
+          var ct = progressionMap[classLevel - 1];
+          if (ct is int) {
+            count = ct;
           }
         }
-        // add additional progression
-        for (var prg in progression[feat.name]!) {
-          var progressionMap = prg.progression;
-          if (progressionMap is Map<String, dynamic>) {
-            for (var level = 1; level <= classLevel; level++) {
-              var levelPrg = progressionMap[level.toString()];
-              if (levelPrg is int) {
-                count += levelPrg;
-              }
+      }
+      // add additional progression
+      for (var prg in prgs) {
+        var progressionMap = prg.progression;
+        if (progressionMap is Map<String, dynamic>) {
+          for (var level = 1; level <= classLevel; level++) {
+            var levelPrg = progressionMap[level.toString()];
+            if (levelPrg is int) {
+              count += levelPrg;
             }
           }
         }
       }
-
-      return [
-        CharacterChoice(
-          reference: feat.refString,
-          name: feat.name,
-          sourceLabel: feat.sourceLabel,
-          options: options.entries!
-              .map<CharacterBuildChoiceSelection?>(
-                (x) => switch (x.type) {
-                  FeatureEntryType.refOptionalfeature =>
-                    x.referencedOptionalFeature == null
-                        ? null
-                        : CharacterBuildChoiceSelection(
-                            choiceName: x.referencedOptionalFeature!.name,
-                            choiceReference:
-                                x.referencedOptionalFeature!.refString,
-                          ),
-                  FeatureEntryType.refSubclassFeature =>
-                    x.classFeature == null
-                        ? null
-                        : CharacterBuildChoiceSelection(
-                            choiceName: x.referencedFeature!.name,
-                            choiceReference: x.referencedFeature!.refString,
-                          ),
-                  _ => null,
-                },
-              )
-              .nonNulls
-              .toList(),
-          chooseQty: count,
-          hasProgression: hasProgression,
-          level: feat.level,
-        ),
-      ];
+    } else if (featOptions != null &&
+        featOptions.entries != null &&
+        featOptions.count != null &&
+        featOptions.count! > 0) {
+      hasOptions = true;
+      count = featOptions.count!;
+      hasProgression = count > 1;
+      selections = featOptions.entries!
+          .map<CharacterBuildChoiceSelection?>(
+            (x) => switch (x.type) {
+              FeatureEntryType.refOptionalfeature =>
+                x.referencedOptionalFeature == null
+                    ? null
+                    : CharacterBuildChoiceSelection(
+                        choiceName: x.referencedOptionalFeature!.name,
+                        choiceReference: x.referencedOptionalFeature!.refString,
+                      ),
+              FeatureEntryType.refSubclassFeature =>
+                x.classFeature == null
+                    ? null
+                    : CharacterBuildChoiceSelection(
+                        choiceName: x.referencedFeature!.name,
+                        choiceReference: x.referencedFeature!.refString,
+                      ),
+              _ => null,
+            },
+          )
+          .nonNulls
+          .toList();
     }
 
-    return [];
+    return hasOptions
+        ? [
+            CharacterChoice(
+              reference: feat.refString,
+              name: feat.name,
+              sourceLabel: feat.sourceLabel,
+              options: selections,
+              chooseQty: count,
+              hasProgression: hasProgression,
+              level: feat.level,
+            ),
+          ]
+        : [];
   }
 
   static List<CharacterChoice> getChoices(

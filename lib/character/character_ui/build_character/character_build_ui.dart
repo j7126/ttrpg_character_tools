@@ -28,6 +28,7 @@ class CharacterBuildUi extends StatelessWidget {
                     context,
                   ).characterChoices)
                     CharacterChoiceCard(
+                      key: ValueKey(choice.reference),
                       choice: choice,
                       characterContext: characterContext,
                     ),
